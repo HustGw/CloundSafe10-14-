@@ -1,0 +1,88 @@
+//
+//  CloundSafe-PrefixHeader.pch
+//  CloundSafe
+//
+//  Created by LittleMian on 16/6/25.
+//
+//
+#ifdef __OBJC__
+
+#ifndef CloundSafe_PrefixHeader_pch
+#define CloundSafe_PrefixHeader_pch
+#import "CSHomeNavigationController.h"
+#import "UINavigationBar+Awesome.h"
+#import "CSNetworkingRequestOperationManager.h"
+#import "AFNetworking.h"
+#import "Masonry.h"
+#import "MBProgressHUD.h"
+#import "SDWebImageManager.h"
+#import "SDWebImageDecoder.h"
+#import "SDWebImageManager.h"
+#import "SDWebImageOperation.h"
+#import "UIImageView+WebCache.h"
+#import "MWPhotoBrowser.h"
+#import "DACircularProgressView.h"
+#import "TZImagePickerController.h"
+#import "TZImageManager.h"
+#import <AliyunOSSiOS/OSSService.h>
+#import "decrypt_picture.h"
+#import "decrypt_video.h"
+#import <Contacts/Contacts.h>
+typedef NS_ENUM(NSInteger, ImageType)
+{
+    JPG = 0,
+    PNG = 1
+};
+typedef NS_ENUM(NSInteger, VideoType)
+{
+   MOV = 0
+};
+typedef NS_ENUM(NSInteger, ContactCellType)
+{
+    phone = 0,
+    email = 1
+};
+#endif
+//http://120.24.2.121:8080
+
+#define LoginURL            @"http://120.24.2.121:8090/cloud/Login/Employee.do"
+#define RegisterURL         @"http://120.24.2.121:8090/cloud/Register/Employee.do"
+#define AcquireCodeURL      @"http://120.24.2.121:8090/cloud/AcquireCode.do"
+#define JudgePhoneURL       @"http://120.24.2.121:8090/cloud/Employee/Judge_Phone.do"
+#define ResetPasswordURL    @"http://120.24.2.121:8090/cloud/ResetPassword/RestPasswordByCode.do"
+#define DownLoadKeyURL      @"http://120.24.2.121:8090/cloud/File/DownLoadFile.do"
+#define UpLoadKeyURL        @"http://120.24.2.121:8090/cloud/File/UpLoadFile.do"
+#define LogoutURL           @"http://120.24.2.121:8090/cloud/Employee/Logout.do"
+
+#define DBFILE_NAME @"contact.sqlite3"
+
+#define ISLOGIN     @"isLogin"
+#define NEEDLOGIN   @"needLogin"
+
+#define ImportPic   @"imtp"
+#define ImportPicRange NSMakeRange(0, 4)
+#define ImportVideo @"imtv"
+#define ImportVideoRange NSMakeRange(0, 4)
+#define CurrentVersion "1.0"
+#define CipherExtension @"content"
+#define DocumentPath [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0]
+#define EnPictureFolder @"PictureCipher"
+#define DePicutreFolder @"PicturePlain"
+#define EnVedioFolder @"VedioCipher"
+#define DeVedioFolder @"VedioPlain"
+#define RGB(c,a)    [UIColor colorWithRed:((c>>16)&0xFF)/256.0  green:((c>>8)&0xFF)/256.0   blue:((c)&0xFF)/256.0   alpha:a]
+#define themeColor [UIColor colorWithRed:255.0/255.0 green:129.0/255.0 blue:3.0/255.0 alpha:1.0]
+
+#define kScreenHeight ([UIScreen mainScreen].bounds.size.height)
+#define kScreenWidth ([UIScreen mainScreen].bounds.size.width)
+#define userDefaults [NSUserDefaults standardUserDefaults]
+#define CSCloundSafeColor [UIColor colorWithRed:17.0/255.0 green:205.0/255.0 blue:110.0/255.0 alpha:1.0]
+#define segmenteLineColor [UIColor colorWithRed:170.0/255.0 green:170.0/255.0 blue:170.0/255.0 alpha:1.0]
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+
+
+
+#endif /* CloundSafe_PrefixHeader_pch */

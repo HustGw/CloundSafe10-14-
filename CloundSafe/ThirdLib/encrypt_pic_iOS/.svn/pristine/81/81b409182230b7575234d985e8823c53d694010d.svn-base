@@ -1,0 +1,49 @@
+#include "picture.h"
+#include "bs.h"
+#include "aes.h"
+extern KeyUnit *g_pKeyUnitBuffer;
+extern int g_KeyUnitIdx;
+
+static int average_extract(int start_pos,int length,double percent)
+{
+	int extract_byte_len = length * percent;
+
+	if(extract_byte_len == 0)
+	{
+		extract_byte_len = 1;
+	}
+	
+	int interval = length/extract_byte_len;
+	int i = 0;
+	for(;i<extract_byte_len; i++)
+	{
+		g_pKeyUnitBuffer[g_KeyUnitIdx].byte_offset = start_pos + i*interval;
+		//printf("g_pKeyUnitBuffer[%d].byte_offset == %d\n",g_KeyUnitIdx,g_pKeyUnitBuffer[g_KeyUnitIdx].byte_offset);
+		g_pKeyUnitBuffer[g_KeyUnitIdx].bit_offset=0;
+		g_pKeyUnitBuffer[g_KeyUnitIdx].key_data_len = MAX_KEY_DATA_LEN;
+		g_KeyUnitIdx++;
+	}
+	return 1;
+}
+
+int generate_keyUnit(SPicture *pic,double percent)
+{
+	PicContent *p = pic->pcontentlist;
+	
+	while(p!=NULL)
+	{
+		if(p->length == 0)
+		{
+			p = p->pNext;			
+			continue;
+		}	
+		//printf("-------start = 0x%x length = %d\n",p->start_pos,p->length);
+		average_extract(p->start_pos,p->length,percent);
+		//unitpar->buffer_len += key_unit_cnt;
+		p = p->pNext;
+	}
+	
+    return 0;
+}
+
+

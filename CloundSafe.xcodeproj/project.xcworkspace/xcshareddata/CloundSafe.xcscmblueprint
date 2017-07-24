@@ -1,0 +1,32 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "9C7D6948DEB427466539581F7179E866A0816B07",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+    "18dad8ea-af30-491a-8b21-9bcae72b1380++2208" : {
+
+    }
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "18dad8ea-af30-491a-8b21-9bcae72b1380++2208" : 0,
+    "9C7D6948DEB427466539581F7179E866A0816B07" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "EC62D587-358D-488C-BD0F-B87A263060F5",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "18dad8ea-af30-491a-8b21-9bcae72b1380++2208" : "CloudEncryption\/CloundSafe\/CloundSafe\/ThirdLib\/encrypt_pic_iOS\/",
+    "9C7D6948DEB427466539581F7179E866A0816B07" : "CloundEncryptioni\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "CloundSafe",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "CloundSafe\/CloundSafe.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "svn:\/\/115.159.142.127\/Ldecode",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "18dad8ea-af30-491a-8b21-9bcae72b1380++2208"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/git.coding.net\/Mess1ah\/CloundEncryption_iOS.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "9C7D6948DEB427466539581F7179E866A0816B07"
+    }
+  ]
+}

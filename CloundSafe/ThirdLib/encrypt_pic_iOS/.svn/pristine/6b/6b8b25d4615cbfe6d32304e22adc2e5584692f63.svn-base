@@ -1,0 +1,67 @@
+#ifndef PICTURE_H
+#define PICTURE_H
+
+#include <stdint.h>
+#include <stdio.h>
+#define SOS_HEAD_LENGTH 2
+#define IDAT_HEAD_LENGTH 4
+#define MAX_KEY_DATA_LEN 8
+#define BITLEN_A_BYTE 8
+
+#define STR_JPG "jpg"
+#define STR_JPEG "jpeg"
+#define STR_PNG "png"
+#define STR_BMP "bmp"
+
+#define BUFFER_SIZE 1024
+
+typedef struct PIC_Content 
+{
+	int start_pos;
+	int head_len;
+	int length;
+	int end_flag;
+	struct PIC_Content *pNext;
+}PicContent;
+
+typedef enum 
+{
+	JPEG=1,
+	PNG,
+	BMP,
+	UNKNOW,
+}Format;
+
+typedef struct  
+{
+	uint8_t	*buffer;
+	int bufsize;
+	
+}S_Picbuf;
+
+typedef struct S_PIC 
+{
+	char *pic_path;
+	FILE* pic_fp;
+	char *keyfilepath;
+	Format pic_format;
+	S_Picbuf *pic_buf;
+	PicContent *pcontentlist;
+	
+}SPicture;
+
+int open_picture(const char *path);
+int open_keyfile(const char *path);
+int process_JPEG(SPicture *pic);
+int process_PNG(SPicture *pic);
+int process_BMP(SPicture *pic);
+int find_pic_content(SPicture *pic);
+int copyFile(const char *sourceFileNameWithPath,  const char *targetFileNameWithPath);  
+int get_pic_format(SPicture* pic);
+int file_size2(char* filename);  
+int init_picture(SPicture* pic,char *pic_path,char *keyfile_path );
+int free_PicContentList(PicContent *head);
+int deinit_picture(SPicture* pic);
+int generate_keyUnit(SPicture *pic,double percent);
+
+#endif

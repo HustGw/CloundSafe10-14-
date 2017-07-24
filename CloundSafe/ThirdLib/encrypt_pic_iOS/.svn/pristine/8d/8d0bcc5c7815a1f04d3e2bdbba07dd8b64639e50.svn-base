@@ -1,0 +1,191 @@
+#include <stdlib.h>
+#include <string.h>
+#include "picture.h"
+#include <stdio.h>
+
+#include "aes.h"
+#include "extract.h"
+
+KeyUnit *g_pKeyUnitBuffer;
+int g_KeyUnitIdx;
+
+int aes_encrypt_file(SPicture *pic)
+{
+	WORD key_schedule[60];
+	BYTE key[32];
+	int write_ret;
+	memcpy(key,pic->pic_buf->buffer,32);
+	BYTE iv[16] = {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f};
+	aes_key_setup(key, key_schedule, 256);
+	uint8_t *tmp_buff = (uint8_t *)malloc((pic->pic_buf->bufsize)*sizeof(uint8_t));
+	memset(tmp_buff,0,(pic->pic_buf->bufsize)*sizeof(uint8_t));
+
+	FILE *fp = fopen(pic->pic_path,"rb+");
+
+	if(fp == NULL)
+	{
+		printf("\033[1;31m open file error!\033[0m \n");
+		return -1;
+	}
+	
+	memcpy(tmp_buff,pic->pic_buf->buffer,pic->pcontentlist->start_pos);
+	aes_encrypt_cbc(pic->pic_buf->buffer+pic->pcontentlist->start_pos,pic->pic_buf->bufsize-pic->pcontentlist->start_pos,tmp_buff+pic->pcontentlist->start_pos, key_schedule, 256, iv);
+	
+	write_ret = fwrite(tmp_buff,sizeof(uint8_t),pic->pic_buf->bufsize,fp);
+	if(write_ret == 0)
+	{
+		printf("write error!\n");
+		return -1;
+	}
+	
+	free(tmp_buff);
+	fclose(fp);
+
+	return 0;
+
+}
+
+int aes_decrypt_file(SPicture *pic)
+{
+
+	WORD key_schedule[60];
+	BYTE key[32];
+	int write_ret;
+	memcpy(key,pic->pic_buf->buffer,32);
+	BYTE iv[16] = {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f};
+	aes_key_setup(key, key_schedule, 256);
+
+	uint8_t *tmp_buff =(uint8_t *)malloc((pic->pic_buf->bufsize)*sizeof(uint8_t));
+	memset(tmp_buff,0,(pic->pic_buf->bufsize)*sizeof(uint8_t));
+	#if 1
+	FILE* pic_fp = fopen(pic->pic_path,"rb+");
+	fread(pic->pic_buf->buffer,sizeof(uint8_t),pic->pic_buf->bufsize,pic_fp);
+	fclose(pic_fp);
+	FILE* newfd = fopen(pic->pic_path, "wb+");
+	if(newfd == NULL)
+	{
+		printf("\033[1;31m open file error!\033[0m \n");
+		return -1;
+	}
+	#endif
+	memcpy(tmp_buff,pic->pic_buf->buffer,pic->pcontentlist->start_pos);
+	aes_decrypt_cbc(pic->pic_buf->buffer+pic->pcontentlist->start_pos ,pic->pic_buf->bufsize-pic->pcontentlist->start_pos, tmp_buff+pic->pcontentlist->start_pos, key_schedule, 256, iv);
+
+	write_ret=fwrite(tmp_buff,sizeof(uint8_t),pic->pic_buf->bufsize,newfd);
+	free(tmp_buff);
+	
+	fclose(newfd);
+	if(write_ret == -1)
+	{
+		printf("write error!\n");
+		return -1;
+	}
+	
+	return 0;
+	
+}
+
+void encrypt_pic(SPicture *pic)
+{
+	if(pic->pic_format == BMP)
+	{
+		aes_encrypt_file(pic);
+	}
+
+	extract_encrypt(pic->pic_path,pic->keyfilepath);
+}
+
+int Encryption(char* pic_path ,int extraction_percent,char* key_path,char* content_path)
+{
+	printf("---Encryption\n");
+	if(extraction_percent == 0)
+		return 0;
+	double percent = (double)extraction_percent/100;
+	int ret = 0;
+	SPicture *pic = (SPicture *)malloc(sizeof(SPicture));
+	memset(pic,0x00,sizeof(SPicture));
+	
+	copyFile(pic_path, content_path);
+	
+	ret = init_picture(pic,content_path,key_path);
+
+	if(ret == -1)
+	{
+		
+		printf("open file error!\n");
+        return -1;
+	}
+	
+	g_pKeyUnitBuffer = (KeyUnit *)malloc(KEY_UNIT_CNT*sizeof(KeyUnit));
+	memset(g_pKeyUnitBuffer,0,KEY_UNIT_CNT*sizeof(KeyUnit));
+	
+	find_pic_content(pic);
+	generate_keyUnit(pic,percent);
+	encrypt_pic(pic);
+	deinit_picture(pic);
+	
+	return 1;
+}
+
+int Decryption(char* srcfilepath,char* key_path)
+{
+
+	if(srcfilepath == NULL || key_path == NULL)
+	{
+		return -1;
+	}
+
+	decrypt_srcfile(srcfilepath,key_path);
+
+	SPicture *pic = (SPicture *)malloc(sizeof(SPicture));
+	memset(pic,0x00,sizeof(SPicture));
+	
+	init_picture(pic,srcfilepath,key_path);
+
+	if(pic->pic_format == BMP)
+	{
+		find_pic_content(pic);
+		aes_decrypt_file(pic);
+	}
+
+	deinit_picture(pic);
+	
+	
+
+	return 0;
+}
+
+#if 0
+int main(int argc,char **argv)
+{
+	int i = 0;
+	/*Decryption("1e.jpg","1_key");
+	Decryption("2e.jpg","2_key");
+	printf("2 over!\n");
+	Decryption("3e.jpg","3_key");
+	Decryption("4e.jpg","4_key");*/
+	//decrypt_srcfile("1e.jpg","1_key");
+	for(i=0;i<30;i++)	
+		decrypt_srcfile("2e.jpg","2_key");
+	printf("end\n");
+
+	return 1;
+}
+
+#endif
+
+#if 0
+void main(int argc,char **argv)
+{
+	
+	Encryption("1.jpg",1,"1_key","1e.jpg");
+	Encryption("2.jpg",1,"2_key","2e.jpg");
+	Encryption("3.jpg",1,"3_key","3e.jpg");
+	Encryption("4.jpg",1,"4_key","4e.jpg");
+}
+#endif
+
+
+
+
+

@@ -1,0 +1,8 @@
+#ifndef EXTRACT_H
+#define EXTRACT_H
+
+#include "bs.h"
+#include "picture.h"
+int generate_keyUnit(SPicture *pic,double percent);
+
+#endif

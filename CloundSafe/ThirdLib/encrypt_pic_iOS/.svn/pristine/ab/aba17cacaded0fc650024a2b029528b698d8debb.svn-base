@@ -1,0 +1,353 @@
+#include <sys/stat.h>
+#include <sys/types.h>
+#include "string.h"
+#include "bs.h"
+#include "aes.h"
+#include "picture.h"
+
+extern KeyUnit *g_pKeyUnitBuffer;
+extern int g_KeyUnitIdx;
+
+
+int process_JPEG(SPicture *pic)
+{
+	int i=0;
+	S_Picbuf *pic_buf = pic->pic_buf;
+	const uint8_t start_tag[2] = {0xff,0xda};
+	const uint8_t end_tag[2] = {0xff,0xd9};
+
+	pic->pcontentlist = (PicContent *)malloc(sizeof(PicContent));
+	memset(pic->pcontentlist,0,sizeof(PicContent));
+
+	if(!pic->pcontentlist)
+	{
+		printf("malloc failed!\n");
+		return -1;
+	}
+	
+	PicContent *p = pic->pcontentlist;
+	PicContent *current;
+	
+	for(;i<pic_buf->bufsize;i++)
+	{
+		if(i == pic_buf->bufsize -1)
+			break;
+
+		if((pic_buf->buffer[i] == start_tag[0]) && (pic_buf->buffer[i+1] == start_tag[1]))
+		{
+ 			current = (PicContent *)malloc(sizeof(PicContent));	
+			memset(current,0,sizeof(PicContent));
+
+			if(!current)
+			{
+				printf("malloc failed!\n");
+				return -1;
+			}
+			memset(current,0,sizeof(PicContent));
+			current->head_len = SOS_HEAD_LENGTH + ((pic_buf->buffer[i+2]&0xff)<<8) + ((pic_buf->buffer[i+3]&0xff));
+			current->start_pos = i + current->head_len;
+			printf("current->start_pos = %d\n",current->start_pos);
+			current->end_flag = 0;
+			p->pNext = current;
+			p = current;
+			
+		}	
+
+	    if((pic_buf->buffer[i] == end_tag[0]) && (pic_buf->buffer[i+1] == end_tag[1]))
+		{
+			current = (PicContent *)malloc(sizeof(PicContent));	
+			memset(current,0,sizeof(PicContent));
+
+			current->start_pos = i;
+			printf("current->end_pos = %d\n",current->start_pos);
+			current->head_len = 0;
+			current->end_flag = 1;
+			p->pNext = current;
+			p = current;
+			
+		}
+
+	}
+	
+	p->pNext = NULL;
+    
+    free(pic->pcontentlist);
+	pic->pcontentlist = pic->pcontentlist->pNext;
+
+	p = pic->pcontentlist;
+	while(p!=NULL)
+	{
+		while(!p->end_flag)
+		{
+			p->length = p->pNext->start_pos - p->pNext->head_len - p->start_pos ;
+			p=p->pNext;
+		}
+		p->length = 0;
+		p = p->pNext;
+	}
+	
+	return 0;
+}
+
+int process_PNG(SPicture *pic)
+{	
+	S_Picbuf *pic_buf = pic->pic_buf;
+	const char start_tag[4] = {0x49,0x44,0x41,0x54};
+	int i=0;
+	pic->pcontentlist = (PicContent*)malloc(sizeof(PicContent));
+	memset(pic->pcontentlist,0,sizeof(PicContent));
+
+	if(!pic->pcontentlist)
+	{
+		printf("malloc failed!\n");
+		return -1;
+	}
+	
+	PicContent *p = pic->pcontentlist;
+	PicContent *current;
+	int byte1=0,byte2=0,byte3=0,byte4=0;
+	
+	for(;i<pic_buf->bufsize;i++)
+	{
+		if(i == pic_buf->bufsize -3)
+			break;
+	
+		if((pic_buf->buffer[i] == start_tag[0]) && (pic_buf->buffer[i+1] == start_tag[1])
+			&& (pic_buf->buffer[i+2] == start_tag[2]) && (pic_buf->buffer[i+3] == start_tag[3]))
+		{
+			current = (PicContent *)malloc(sizeof(PicContent));		
+			memset(current,0,sizeof(PicContent));
+
+ 			current->start_pos = i + IDAT_HEAD_LENGTH + 256;
+
+			if(i>=4)
+			{
+				byte1 = (pic_buf->buffer[i-4]&0xff)<<24;
+				byte2 =	(pic_buf->buffer[i-3]&0xff)<<16;
+				byte3 =	(pic_buf->buffer[i-2]&0xff)<<8;
+				byte4 =	(pic_buf->buffer[i-1]&0xff);
+				current->length = byte1 + byte2 + byte3 + byte4;
+			}
+			
+			p->pNext = current;
+			p = current;	
+		}	
+		
+	}
+
+	p->pNext = NULL;
+    free(pic->pcontentlist);
+	pic->pcontentlist = pic->pcontentlist->pNext;
+	
+	return 0;
+
+}
+
+int process_BMP(SPicture *pic)
+{
+	S_Picbuf *pic_buf=pic->pic_buf;
+	int i=0;
+	int byte1=0,byte2=0,byte3=0,byte4=0;
+	pic->pcontentlist = (PicContent *)malloc(sizeof(PicContent));	
+	memset(pic->pcontentlist,0,sizeof(PicContent));
+
+	if(!pic->pcontentlist)
+	{
+		printf("malloc failed!\n");
+		return -1;
+	}
+	
+	PicContent *p = pic->pcontentlist;
+	PicContent *current;
+	
+	for(;i<pic_buf->bufsize;i++)
+	{
+		if( i == 10)
+		{
+			byte1 = (pic_buf->buffer[i]&0xff);
+			byte2 = (pic_buf->buffer[i+1]&0xff)<<8;
+			byte3 = (pic_buf->buffer[i+2]&0xff)<<16;
+			byte4 = (pic_buf->buffer[i+3]&0xff)<<24;
+
+			current = (PicContent *)malloc(sizeof(PicContent));
+			memset(current,0,sizeof(PicContent));
+
+			current->start_pos = byte1 + byte2 + byte3 + byte4;
+			current->length = pic->pic_buf->bufsize - current->start_pos;
+
+			p->pNext = current;
+			p = current;	
+			//printf("start = %d , len =%d\n",current->start_pos,current->length);
+			break;
+		}
+		
+	}
+
+	p->pNext = NULL;
+    free(pic->pcontentlist);
+	pic->pcontentlist = pic->pcontentlist->pNext;
+	return 0;
+
+}
+
+#if 0
+int get_fileName_prefix(const char *FileName)
+{
+	if(FileName == NULL)
+	{
+		return -1;
+	}
+
+	char *p = FileName;
+
+	while(*p!='\0')
+	{
+		if(*p == '.')
+		{
+			*p = '\0';
+			return 0;
+		}
+		p++;
+	}
+
+	return -2;
+}
+#endif
+
+int find_pic_content(SPicture *pic)
+{
+	switch(pic->pic_format)
+	{
+		case JPEG:
+			//todo: process jpeg
+			process_JPEG(pic);
+			
+			break;
+		case PNG:
+			//todo: process png
+			process_PNG(pic);
+			break;
+		case BMP:
+			//todo: process bmp
+			process_BMP(pic);
+			break;
+		case UNKNOW:
+			printf("UNKNOW\n");		
+			break;
+		default :
+			break;
+			
+	}
+	
+	return 0;
+}
+
+int copyFile(const char *sourceFileNameWithPath,  
+        const char *targetFileNameWithPath)  
+{  
+    FILE *fpR, *fpW;  
+    char buffer[BUFFER_SIZE];  
+    int lenR, lenW;  
+    if ((fpR = fopen(sourceFileNameWithPath, "rb")) == NULL)  
+    {  
+        //myLog("The file '%s' can not be opened! \n", sourceFileNameWithPath);  
+        return -1;  
+    }  
+   
+	if ((fpW = fopen(targetFileNameWithPath, "wb")) == NULL)  
+    {  
+        //myLog("The file '%s' can not be opened! \n", targetFileNameWithPath);  
+        fclose(fpR);  
+        return -1;  
+    }  
+  
+    memset(buffer, 0, BUFFER_SIZE);  
+    
+	while ((lenR = fread(buffer,1,1024, fpR)) > 0)  
+    {  
+		char c = buffer[1024];
+		if(ferror(fpR))
+		{
+			printf("error");
+		}
+        if ((lenW = fwrite(buffer, 1, lenR, fpW)) != lenR)  
+        {  
+            //myLog("Write to file '%s' failed!\n", targetFileNameWithPath);  
+            fclose(fpR);  
+            fclose(fpW);  
+            return -1;  
+        }  
+        memset(buffer, 0, BUFFER_SIZE);  
+    }  
+  
+    fclose(fpR);  
+    fclose(fpW);  
+    return 0;  
+}  
+
+
+int get_pic_format(SPicture* pic)
+{
+	if(strstr(pic->pic_path,STR_JPG) != NULL || strstr(pic->pic_path,STR_JPEG) != NULL)	
+		pic->pic_format = JPEG;
+	else if(strstr(pic->pic_path,STR_PNG) != NULL)
+		pic->pic_format = PNG;
+	else if(strstr(pic->pic_path,STR_BMP) != NULL)
+		pic->pic_format = BMP;
+	else 
+		pic->pic_format = UNKNOW;
+	return 0;
+}
+
+int init_picture(SPicture* pic,char *pic_path,char *keyfile_path)
+{
+	pic->pic_path = pic_path;
+	pic->keyfilepath = keyfile_path;
+
+	pic->pic_fp = fopen(pic_path,"rb+");
+	if(pic->pic_fp == NULL)
+		return -1;
+		
+	pic->pic_buf = (S_Picbuf *)malloc(sizeof(S_Picbuf));
+	memset(pic->pic_buf,0x00,sizeof(S_Picbuf));
+
+	pic->pic_buf->bufsize = file_size2(pic->pic_path);
+	
+	pic->pic_buf->buffer = (uint8_t *)malloc(pic->pic_buf->bufsize*sizeof(uint8_t));
+	memset(pic->pic_buf->buffer,0x00,pic->pic_buf->bufsize*sizeof(uint8_t));
+
+	fread(pic->pic_buf->buffer,sizeof(uint8_t),pic->pic_buf->bufsize,pic->pic_fp);
+	get_pic_format(pic);
+
+	return 0;
+}
+
+int free_PicContentList(PicContent *head)
+{
+	PicContent *current = head;
+	PicContent *next;
+
+	while(current != NULL)
+	{
+		next = current->pNext;
+		free(current);	
+		current = next;
+	}
+
+	return 0;
+}
+
+int deinit_picture(SPicture* pic)
+{	
+	fclose(pic->pic_fp);
+	free(pic->pic_buf->buffer);
+	free(pic->pic_buf);
+	free_PicContentList(pic->pcontentlist);
+	free(pic);
+	free(g_pKeyUnitBuffer);
+	g_pKeyUnitBuffer = NULL;
+	g_KeyUnitIdx = 0;
+	
+	return 0;	
+}
+

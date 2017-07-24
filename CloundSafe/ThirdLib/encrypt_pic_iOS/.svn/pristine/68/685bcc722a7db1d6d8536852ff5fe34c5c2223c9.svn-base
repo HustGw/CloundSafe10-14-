@@ -1,0 +1,165 @@
+#include <stdio.h>
+#include <string.h>
+
+#include "bs.h"
+#include "picture.h"
+
+void init_srcfile(SrcFileInfo *srcfile,char* srcfilepath)
+{
+	memset(srcfile,0,sizeof(SrcFileInfo));
+	srcfile->srcfp = fopen(srcfilepath,"rb+");
+
+	if(srcfile->srcfp == NULL)
+	{	
+		printf("open srcfilepath error!\n");
+		exit(-1);
+	}
+
+	srcfile->buf_size = MAX_BUFFER_LEN;
+	srcfile->isfirst_buf = True;
+	srcfile->data = (uint8_t *)malloc((srcfile->buf_size) * sizeof(uint8_t));
+	memset(srcfile->data,0,srcfile->buf_size);
+}
+
+void init_keyfile(Keyfile *keyfile,char *key_path)
+{
+	memset(keyfile,0,sizeof(Keyfile));	
+	keyfile->keyfp = fopen(key_path,"rb+");
+	
+	if(keyfile->keyfp == NULL)
+	{	
+		printf("open srcfilepath error!\n");
+		exit(-1);
+	}
+	
+	keyfile->filesize = (size_t)file_size2(key_path);
+	keyfile->data = (uint8_t *)malloc((keyfile->filesize) * sizeof(uint8_t));
+	memset(keyfile->data,0,(keyfile->filesize) * sizeof(uint8_t));
+	fread(keyfile->data,sizeof(uint8_t),keyfile->filesize,keyfile->keyfp);
+	keyfile->b_key = bs_new(keyfile->data,keyfile->filesize);
+	
+}
+
+void deinit_keyfile(Keyfile *keyfile)
+{
+	fclose(keyfile->keyfp);
+	bs_free(keyfile->b_key);
+	free(keyfile->data);
+	free(keyfile);
+}
+
+void deinit_srcfile(SrcFileInfo *srcfile)
+{
+	fclose(srcfile->srcfp);
+	free(srcfile->data);
+	free(srcfile);
+}
+
+/*
+*	get the encrypt position of every keyunit: relative_byteoff, bitoff and datalen 
+*/
+int get_key_encryptpos(Key *key,Keyfile *keyfile)
+{	
+	
+	key->keyformat->unitlen1 = KEY_BIT_LEN_1;
+	key->keyformat->unitlen2 = bs_read_u(keyfile->b_key,key->keyformat->unitlen1);
+	key->keyformat->unitlen3 = KEY_BIT_LEN_3;
+	key->keyformat->unitlen4 = KEY_BIT_LEN_4;
+
+	key->relative_byteoff = bs_read_u(keyfile->b_key,key->keyformat->unitlen2);
+	key->bitoff = bs_read_u(keyfile->b_key,key->keyformat->unitlen3);
+	key->datalen = bs_read_u(keyfile->b_key,key->keyformat->unitlen4);
+
+	//printf("relative_byteoff = %d bitoff = %d datalen = %d \n",key->relative_byteoff,key->bitoff,key->datalen);
+
+	key->change_byte_cnt = key->datalen/BITLEN_A_BYTE;
+	key->keyformat->unitlen5 = key->datalen;
+	key->byteoff += key->relative_byteoff;
+
+	return 1;
+}
+
+int write_keydata_tosrcfile(SrcFileInfo * file,Key * key)
+{
+	int i = 0;
+	int buf_off ;
+
+	read_srcfile(file,key);
+
+	buf_off	= file->buf_offset;
+
+	for(;i < key->change_byte_cnt;i++)
+	{
+		if((file->buf_offset + i) >= file->buf_size)
+		{
+			continue;	
+		}
+		
+		file->data[buf_off+i] |= key->keydata[i];
+	}
+
+	free(key->keydata);
+	return 1;
+}
+
+int goto_byte_start(Key *key,Keyfile *keyfile)
+{
+	int keybitlen = key->keyformat->unitlen1 + key->keyformat->unitlen2 + key->keyformat->unitlen3 + key->keyformat->unitlen4 + key->keyformat->unitlen5;
+	int skip_bitlen;
+
+	if(keybitlen%BITLEN_A_BYTE == 0)
+		skip_bitlen = 0;
+	else 
+		skip_bitlen = BITLEN_A_BYTE - (keybitlen%BITLEN_A_BYTE);
+
+	bs_skip_u(keyfile->b_key,skip_bitlen);
+    return 0;
+}
+
+int get_keydata(Key *key,Keyfile *keyfile)
+{
+	key->keydata = (uint8_t *)malloc((key->change_byte_cnt)*sizeof(uint8_t));
+	memset(key->keydata,0,(key->change_byte_cnt)*sizeof(uint8_t));
+	bs_read_data(keyfile->b_key,key->keyformat->unitlen5,key->keydata);
+	goto_byte_start(key,keyfile);
+	return 1;
+}
+
+int decrypt_srcfile(char* srcfilepath, char* key_path)
+{
+	SrcFileInfo *srcfile = (SrcFileInfo *)malloc(sizeof(SrcFileInfo));
+	memset(srcfile,0,sizeof(SrcFileInfo));
+
+	Keyfile *keyfile = (Keyfile *)malloc(sizeof(Keyfile));
+	memset(keyfile,0,sizeof(Keyfile));
+
+	init_srcfile(srcfile,srcfilepath);
+	init_keyfile(keyfile,key_path);
+	
+	Key *key = (Key *)malloc(sizeof(Key));
+	memset(key,0,sizeof(Key));
+	
+	key->keyformat = (Keyformat *)malloc(sizeof(Keyformat));
+	memset(key->keyformat,0,sizeof(Keyformat));
+	
+	while(!bs_eof(keyfile->b_key))
+	{
+		get_key_encryptpos(key,keyfile);
+		get_keydata(key,keyfile);
+		write_keydata_tosrcfile(srcfile,key);
+	}
+	
+	fseek(srcfile->srcfp,srcfile->write_pos,SEEK_SET);
+    fwrite(srcfile->data,sizeof(char),srcfile->read_byte_count,srcfile->srcfp);
+	
+	free(key->keyformat);
+	free(key);
+	deinit_srcfile(srcfile);
+	deinit_keyfile(keyfile);
+	
+	return 1;
+}
+
+
+
+

@@ -1,0 +1,96 @@
+#include "bs.h"
+#include <sys/stat.h>
+#include "aes.h"
+
+int file_size2(char* filename)
+{  
+    struct stat statbuf;  
+    stat(filename,&statbuf);  
+    int size=statbuf.st_size;  
+  
+    return size;  
+} 
+
+int getbitcnt(unsigned int Number,int *BitCount )
+{
+	int i32Count=0;
+	
+	if(Number == 0)
+	{
+		i32Count=1;
+	}
+	
+	while(Number != 0)
+	{
+		i32Count++;
+		Number /= 2;
+	}
+
+	*BitCount=i32Count;
+	
+	return 0;
+}
+
+int get_keybytelen(Key *key , int *key_all_data_bytelen)
+{
+	int keybitlen = key->keyformat->unitlen1 + key->keyformat->unitlen2 + key->keyformat->unitlen3 + key->keyformat->unitlen4 + key->keyformat->unitlen5;
+	int keybytelen = keybitlen/BITLEN_A_BYTE;
+
+	if(keybitlen%BITLEN_A_BYTE != 0)
+	{
+		keybytelen += 1;
+	}
+	*key_all_data_bytelen = keybytelen;
+    return 0;
+}
+
+
+int bs_write_data(bs_t *b, int bitlen,uint8_t *s_Keydata)
+{
+	int i = 0;
+
+	while(bitlen > BITLEN_A_BYTE)
+	{
+		bs_write_u(b,BITLEN_A_BYTE,s_Keydata[i]);		
+		i++;
+		bitlen -= BITLEN_A_BYTE;	
+	}
+	
+	bs_write_u(b,bitlen,s_Keydata[i]);		
+	return 0;
+}
+
+int bs_read_data(bs_t *b, int bitlen,uint8_t *s_Keydata)
+{
+	int i = 0;
+
+	while(bitlen > BITLEN_A_BYTE)
+	{
+		s_Keydata[i] = (uint8_t)bs_read_u(b,BITLEN_A_BYTE);		
+		i++;
+		bitlen -= BITLEN_A_BYTE;	
+	}
+	
+	s_Keydata[i] = (uint8_t)bs_read_u(b,bitlen);		
+	return 0;
+}
+
+/*
+*	get the changed byte number of a keyunit
+*/
+int get_changed_byte_cnt(int BitLength,int BitOffset,int *ChangedByteNum)
+{
+	int ByteCount=0;
+
+	ByteCount = (BitOffset+BitLength)/BITLEN_A_BYTE;
+	
+	if((BitOffset+BitLength)%BITLEN_A_BYTE != 0)
+	{
+		ByteCount += 1;
+	}
+
+	*ChangedByteNum = ByteCount;
+	return 0;
+}
+
+

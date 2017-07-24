@@ -1,0 +1,287 @@
+#include <stdio.h>
+#include <string.h>
+
+#include "bs.h"
+#include "picture.h"
+
+extern KeyUnit *g_pKeyUnitBuffer;
+extern int g_KeyUnitIdx;
+
+static const uint8_t hash_high[9] = 
+{
+	0x0,
+	0x80, // 1000 0000
+	0xc0,	// 1100 0000	
+	0xe0,	// 1110 0000	
+	0xf0,	// 1111 0000	
+	0xf8,	// 1111 1000	
+	0xfc,	// 1111 1100	
+	0xfe,	// 1111 1110	
+	0xff	// 1111 1111	
+};
+static const uint8_t hash_low[9] 	= 
+{
+	0x00,	// 0000 0000
+	0x01,	// 0000 0001
+	0x03,	// 0000 0011
+	0x07,	// 0000 0111
+	0x0f,	// 0000 1111
+	0x1f,   // 0001 1111
+	0x3f,	// 0011 1111
+	0x7f,	// 0111 1111
+	0xff	// 1111 1111
+};
+
+static const uint8_t hash_key_high[9] =
+{
+	0xff, // 1111 1111
+	0x7f, // 0111 1111
+	0x3f, // 0011 1111
+	0x1f, // 0001 1111
+	0x0f, // 0000 1111
+	0x07, // 0000 0111
+	0x03, // 0000 0011
+	0x01, // 0000 0001
+	0x0,	// 0000 0000
+};
+
+/*write the modifed data to srcfile*/
+int write_srcfile(SrcFileInfo *file)
+{
+	//printf("--write back\n");
+	fseek(file->srcfp,file->write_pos,SEEK_SET);
+    fwrite(file->data,sizeof(uint8_t),file->read_byte_count,file->srcfp);
+   
+    return 1;
+    
+}
+
+int extract_encrypt(char *srcfilepath,char *keypath)
+{
+	int i = 0;
+	
+	SrcFileInfo *srcfile = (SrcFileInfo*)malloc(sizeof(SrcFileInfo));
+	memset(srcfile,0,sizeof(SrcFileInfo));
+	
+	srcfile->srcfp = fopen(srcfilepath,"rb+");
+	srcfile->buf_size = MAX_BUFFER_LEN;
+
+	srcfile->data = (uint8_t *)malloc((srcfile->buf_size) * sizeof(uint8_t));
+	memset(srcfile->data,0,(srcfile->buf_size) * sizeof(uint8_t));
+	srcfile->isfirst_buf = True;
+	
+	Key *key = (Key *)malloc(sizeof(Key));
+	memset(key,0,sizeof(Key));
+
+	key->keyfp = fopen(keypath,"wb+");
+	if(key->keyfp == NULL)
+	{
+		return -1;
+	}
+	
+	for(;i < g_KeyUnitIdx;i++)
+	{
+		encrypt_one_unit(i,srcfile,key);
+	}
+	
+    write_srcfile(srcfile);
+
+	fclose(key->keyfp);
+	fclose(srcfile->srcfp);
+	free(srcfile->data);
+	free(srcfile);
+	free(key);
+
+	return 1;
+}
+
+
+
+
+int read_srcfile(SrcFileInfo *file,Key *key)
+{
+	int byteoff = key->byteoff;
+	file->read_next_buf = False;
+	int cur_pos = 0;
+	int ret = 0;
+	while(byteoff >= (file->buf_no+1)*(file->buf_size))
+	{	
+		cur_pos = (file->buf_no+1)*(file->buf_size);
+		fseek(file->srcfp,cur_pos,SEEK_SET);
+		file->read_pos = ftell(file->srcfp);	
+		file->buf_no++;	
+		file->read_next_buf = True;
+	}
+	
+	file->buf_offset = byteoff - (file->buf_no)*(file->buf_size);
+
+	if((file->read_next_buf == True) && (file->bufmodifed == True))
+    {
+ 	    write_srcfile(file);
+ 	    file->bufmodifed = False;
+    }
+	   
+	if(file->read_next_buf || file->isfirst_buf)
+	{	
+		file->isfirst_buf = False;
+		fseek(file->srcfp,file->read_pos,SEEK_SET);
+		file->write_pos = ftell(file->srcfp);
+		file->read_byte_count = fread(file->data,sizeof(uint8_t),file->buf_size,file->srcfp);
+
+		if(file->read_byte_count > 0)
+		{
+			file->bufmodifed = True;
+		}
+		/*else
+		{
+			printf("read src file error!\n");
+			return -1;
+		}*/
+	}
+
+	return 0;
+}
+
+int get_one_key(Key *key,SrcFileInfo *srcfile )
+{
+	int i = 0;
+	int buf_off = srcfile->buf_offset;
+	int bit_off = key->bitoff;
+	int change_byte_cnt = key->change_byte_cnt;
+	uint8_t  *data = (uint8_t *)malloc((key->change_byte_cnt)*sizeof(uint8_t));
+	memset(data,0,(key->change_byte_cnt)*sizeof(uint8_t));
+	
+	for(;i < change_byte_cnt;i++)
+	{
+		if((srcfile->buf_offset + i) >= srcfile->buf_size)
+		{
+			continue;	
+		}
+		
+		if(0 == i)	
+		{
+			data[i] = srcfile->data[buf_off]&hash_key_high[bit_off];
+			//printf("data = 0x%x\n",data[i]);
+			srcfile->data[buf_off+i] &= hash_high[bit_off];
+		}
+		else if(change_byte_cnt - 1 == i)
+		{
+			data[i] = srcfile->data[buf_off+i]&hash_high[bit_off];
+			//printf("data = 0x%x\n",data[i]);
+			srcfile->data[buf_off+i] &= hash_low[BITLEN_A_BYTE-bit_off];
+		}
+		else
+		{
+			data[i] =srcfile->data[buf_off+i]&hash_key_high[0];
+			//printf("data = 0x%x\n",data[i]);
+			srcfile->data[buf_off+i] &= hash_high[0];
+		}
+	
+	}
+
+	bs_t *b = NULL;
+	b=bs_new(key->keydata,key->keyunit_bytelen);
+
+	bs_write_u(b,key->keyformat->unitlen1,key->keyformat->unitlen2);
+	bs_write_u(b,key->keyformat->unitlen2,key->relative_byteoff);
+	bs_write_u(b,key->keyformat->unitlen3,key->bitoff);
+	bs_write_u(b,key->keyformat->unitlen4,key->datalen);
+	bs_write_data(b,key->keyformat->unitlen5,data);	
+	
+	free(data);
+	bs_free(b);
+
+	return 1;
+}
+
+void init_key(int index, Key *key, SrcFileInfo *srcfile)
+{
+	key->byteoff= g_pKeyUnitBuffer[index].byte_offset;
+	
+	//int relative_byteoff = 0;
+
+	if(index == 0)
+		key->relative_byteoff = g_pKeyUnitBuffer[index].byte_offset;
+	else
+		key->relative_byteoff  = g_pKeyUnitBuffer[index].byte_offset - g_pKeyUnitBuffer[index-1].byte_offset;
+
+	if(key->relative_byteoff < 0)
+	{
+		printf("relative_byteoff < 0\n");
+		return ;
+	}
+
+	key->bitoff = g_pKeyUnitBuffer[index].bit_offset;
+	key->datalen = g_pKeyUnitBuffer[index].key_data_len;
+
+	get_changed_byte_cnt(key->datalen,key->bitoff,&(key->change_byte_cnt));
+	key->keyformat = (Keyformat *)malloc(sizeof(Keyformat));
+	memset(key->keyformat,0,sizeof(Keyformat));
+	//printf("relative_byteoff = %d\n",key->relative_byteoff);
+	key->keyformat->unitlen1 = KEY_BIT_LEN_1;
+	getbitcnt(key->relative_byteoff,&(key->keyformat->unitlen2));
+	key->keyformat->unitlen3 = KEY_BIT_LEN_3;
+	key->keyformat->unitlen4 = KEY_BIT_LEN_4;
+	key->keyformat->unitlen5 = (key->change_byte_cnt)*BITLEN_A_BYTE;
+
+	/*keyunit_bytelen stands for the byte length of a key unit */
+	
+	key->datalen = (key->change_byte_cnt)*BITLEN_A_BYTE;
+	get_keybytelen(key,&(key->keyunit_bytelen));
+	key->keydata = (uint8_t *)malloc(key->keyunit_bytelen*sizeof(uint8_t));
+	memset(key->keydata,0,key->keyunit_bytelen*sizeof(uint8_t));
+
+#if 0
+	FILE* dist = fopen("encrypt_key_unit", "a+");
+	if(!dist)
+	{
+		printf("open key_unit_distribute error!\n");
+		return ;
+	}
+	char s[255];
+	sprintf(s,"key->relative_byteoff:%d\t,key->bitoff:%d\t,key->datalen:%d\t,key->change_byte_cnt:%d\t,key->keyunit_bytelen:%d\t\n",
+					key->relative_byteoff,key->bitoff,key->datalen,key->change_byte_cnt,key->keyunit_bytelen);
+	fwrite(s,strlen(s),1,dist);
+#endif
+	
+}
+
+void deinit_key(Key *key)
+{
+	free(key->keyformat);
+	free(key->keydata);
+}
+
+int write_keyfile(Key *key)
+{
+	int write_ret;
+	
+	write_ret =	fwrite(key->keydata,sizeof(uint8_t),key->keyunit_bytelen,key->keyfp);
+
+	if(write_ret==0 || write_ret ==-1)
+	{
+		printf("write to keyfile error! write_ret=%d \n",write_ret);
+		return -1;
+	}
+
+	return 1;
+	
+}
+
+int encrypt_one_unit(int index,SrcFileInfo *srcfile,Key *key)
+{
+	int ret = 0;
+	init_key(index,key,srcfile);
+	 
+	ret = read_srcfile(srcfile,key);
+	if(ret == -1)
+	{
+		return 0;
+	}
+	get_one_key(key, srcfile);
+	write_keyfile(key);
+	
+	deinit_key(key);
+	return 1;
+}
+
