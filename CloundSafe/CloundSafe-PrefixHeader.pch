@@ -43,21 +43,22 @@ typedef NS_ENUM(NSInteger, ContactCellType)
     email = 1
 };
 #endif
-//http://120.24.2.121:8080
+//http://120.24.2.121:8091
 
-#define LoginURL            @"http://120.24.2.121:8090/cloud/Login/Employee.do"
-#define RegisterURL         @"http://120.24.2.121:8090/cloud/Register/Employee.do"
-#define AcquireCodeURL      @"http://120.24.2.121:8090/cloud/AcquireCode.do"
-#define JudgePhoneURL       @"http://120.24.2.121:8090/cloud/Employee/Judge_Phone.do"
-#define ResetPasswordURL    @"http://120.24.2.121:8090/cloud/ResetPassword/RestPasswordByCode.do"
-#define DownLoadKeyURL      @"http://120.24.2.121:8090/cloud/File/DownLoadFile.do"
-#define UpLoadKeyURL        @"http://120.24.2.121:8090/cloud/File/UpLoadFile.do"
-#define LogoutURL           @"http://120.24.2.121:8090/cloud/Employee/Logout.do"
+#define LoginURL            @"http://119.23.162.138/cloud/Login/Employee.do"
+#define RegisterURL         @"http://119.23.162.138/cloud/Register/Employee.do"
+#define AcquireCodeURL      @"http://119.23.162.138/cloud/AcquireCode.do"
+#define JudgePhoneURL       @"http://119.23.162.138/cloud/Employee/Judge_Phone.do"
+#define ResetPasswordURL    @"http://119.23.162.138/cloud/ResetPassword/RestPasswordByCode.do"
+#define DownLoadKeyURL      @"http://119.23.162.138/cloud/File/DownLoadFile.do"
+#define UpLoadKeyURL        @"http://119.23.162.138/cloud/File/UpLoadFile.do"
+#define LogoutURL           @"http://119.23.162.138/cloud/Employee/Logout.do"
 
 #define DBFILE_NAME @"contact.sqlite3"
 
 #define ISLOGIN     @"isLogin"
 #define NEEDLOGIN   @"needLogin"
+#define CHECK  @"CheckboxBtn"
 
 #define ImportPic   @"imtp"
 #define ImportPicRange NSMakeRange(0, 4)

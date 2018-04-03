@@ -20,6 +20,8 @@
 -(void)viewDidLoad
 {
     [super viewDidLoad];
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectNull style:UITableViewStylePlain];
+    self.tableView.sectionFooterHeight=0;
     self.navigationItem.title = @"选择文件类型";
     UIBarButtonItem *left = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"backIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(back)];
     [left setTintColor:[UIColor whiteColor]];

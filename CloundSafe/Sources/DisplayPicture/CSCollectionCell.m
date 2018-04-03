@@ -11,7 +11,6 @@
 #import "CSPicture.h"
 #import "FICImageCache.h"
 @interface CSCollectionCell()
-@property (strong, nonatomic) UIImageView *selectImageView;
 @property (strong, nonatomic) UITapGestureRecognizer *fullScreenRecognizer;
 @end
 @implementation CSCollectionCell
@@ -72,8 +71,8 @@
     if (picture != _picture)
     {
         _picture = picture;
-        self.selectPhotoButton.selected = NO;
-        self.selectImageView.image = [UIImage imageNamed:@"photo_des"];
+//        self.selectPhotoButton.selected = NO;
+//        self.selectImageView.image = [UIImage imageNamed:@"photo_des"];
         [[FICImageCache sharedImageCache] retrieveImageForEntity:picture withFormatName:_imageFormatName completionBlock:^(id<FICEntity> entity, NSString *formatName, UIImage *image)
          {
              // This completion block may be called much later. We should check to make sure this cell hasn't been reused for different photos before displaying the image that has loaded.

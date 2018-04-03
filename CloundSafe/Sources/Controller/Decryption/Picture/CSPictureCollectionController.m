@@ -21,8 +21,7 @@
 
 NSInteger const maxCount = 9;//图片选择上限
 @interface CSPictureCollectionController ()<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,CSFullScreenPictureDisplayDelegate>
-
-
+@property (nonatomic, copy) NSString *plistName;
 @end
 
 @implementation CSPictureCollectionController
@@ -33,16 +32,113 @@ static NSString * const reuseIdentifier = @"Cell";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
     [self configCollectionView];
     self.imageArr = [CSDecryptionController loadPhoto];
     self.isSaveImage = YES;
-    UIBarButtonItem *left = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"backIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(cancel)];
+    UIBarButtonItem *left = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"backIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(back)];
+    CAGradientLayer *navigationBarLayer = [CAGradientLayer layer];
+    navigationBarLayer.frame = CGRectMake(0, 0, self.view.frame.size.width, self.navigationController.navigationBar.frame.size.height);
+    navigationBarLayer.endPoint = CGPointMake(1, 0);
+    navigationBarLayer.locations =@[@(0.1),@(1.0)];
+    [navigationBarLayer setColors:@[(id)[RGB(0x31C2B1,1) CGColor],(id)[RGB(0x1C27C,1) CGColor]]];
     [left setTintColor:[UIColor whiteColor]];
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     self.navigationItem.leftBarButtonItem = left;
+    UIView *centerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 64)];
+    UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(20, self.view.frame.size.width/2-50, 100, 40)];
+    titleLabel.text = @"选择图片";
+    titleLabel.font = [UIFont systemFontOfSize:16.0];
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    titleLabel.textColor = [UIColor whiteColor];
+    [centerView.layer addSublayer:navigationBarLayer];
+    [centerView addSubview:titleLabel];
+    self.navigationItem.titleView = centerView;
+    self.plistName = @"Asset";
+    NSString *test = @"this is a test";
+//    _myAlbum = [[MyAlbum alloc]initWithFolderName:@"云加密"];
+    [self createFolder];
+    [self setPlistName];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refleshPicture) name:@"refleshPicture" object:nil];
 }
+-(void)back{
+    [self.navigationController popToRootViewControllerAnimated:YES];
+}
+- (BOOL)isExistFolder:(NSString *)folderName {
+    //首先获取用户手动创建相册的集合
+    PHFetchResult *collectonResuts = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:nil];
+    
+    __block BOOL isExisted = NO;
+    //对获取到集合进行遍历
+    [collectonResuts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        PHAssetCollection *assetCollection = obj;
+        //folderName是我们写入照片的相册
+        if ([assetCollection.localizedTitle isEqualToString:folderName])  {
+            isExisted = YES;
+        }
+    }];
+    
+    return isExisted;
+}
+
+- (void)createFolder {
+    if (![self isExistFolder:@"云加密"]) {
+        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+            //添加HUD文件夹
+            [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:@"云加密"];
+            
+        } completionHandler:^(BOOL success, NSError * _Nullable error) {
+            if (success) {
+                NSLog(@"创建相册文件夹成功!");
+            } else {
+                NSLog(@"创建相册文件夹失败:%@", error);
+            }
+        }];
+    }
+}
+- (void)setPlistName{
+        
+        //创建plist文件，记录path和localIdentifier的对应关系
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES);
+        NSString *path = [paths objectAtIndex:0];
+        NSString *filePath = [path stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist", self.plistName]];
+        NSLog(@"plist路径:%@", filePath);
+        NSFileManager* fm = [NSFileManager defaultManager];
+        if (![fm fileExistsAtPath:filePath]) {
+            BOOL success = [fm createFileAtPath:filePath contents:nil attributes:nil];
+            if (!success) {
+                NSLog(@"创建plist文件失败!");
+            } else {
+                NSLog(@"创建plist文件成功!");
+            }
+        } else {
+            NSLog(@"沙盒中已有该plist文件，无需创建!");
+        }
+}
+#pragma mark - 写入plist文件
+- (void)writeDicToPlist:(NSDictionary *)dict {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES);
+    NSString *path = [paths objectAtIndex:0];
+    NSString *filePath = [path stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist", _plistName]];
+    [dict writeToFile:filePath atomically:YES];
+}
+
+#pragma mark - 读取plist文件
+- (NSDictionary *)readFromPlist {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES);
+    NSString *path = [paths objectAtIndex:0];
+    NSString *filePath = [path stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist", _plistName]];
+    return [NSDictionary dictionaryWithContentsOfFile:filePath];
+}
+
+#pragma mark - 根据路径获取文件名
+- (NSString *)showFileNameFromPath:(NSString *)path {
+    return [NSString stringWithFormat:@"%@", [[path componentsSeparatedByString:@"/"] lastObject]];
+}
+
+
+
+
 - (void)refleshPicture
 {
     self.imageArr = [CSDecryptionController loadPhoto];
@@ -78,6 +174,7 @@ static NSString * const reuseIdentifier = @"Cell";
     CSCollectionCell *cell = (CSCollectionCell *)[collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     __weak typeof(cell) weakCell = cell;
     CSPicture *picture = self.imageArr[indexPath.row];
+    cell.selectImageView.image = [UIImage imageNamed:@"photo_des"];
     [cell setImageFormatName:self.imageFormatName];
     [cell setPicture:picture];
     cell.imageIdentifier = [[picture sourceImageURL] path];
@@ -297,8 +394,52 @@ static NSString * const reuseIdentifier = @"Cell";
     
     if (self.isSaveImage == YES)
     {
+        NSString *imagePath = [[contentPath stringByDeletingPathExtension]stringByAppendingPathExtension:@"jpg"];
+        NSURL *url = [NSURL fileURLWithPath:imagePath];
+        //标识保存到系统相册中的标识
+        __block NSString *localIdentifier;
+        
+        //首先获取相册的集合
+        PHFetchResult *collectonResuts = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:nil];
+        //对获取到集合进行遍历
+        [collectonResuts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            PHAssetCollection *assetCollection = obj;
+            //Camera Roll是我们写入照片的相册
+            if ([assetCollection.localizedTitle isEqualToString:@"云加密"])  {
+                [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                    //请求创建一个Asset
+                    PHAssetChangeRequest *assetRequest = [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:url];
+                    //请求编辑相册
+                    PHAssetCollectionChangeRequest *collectonRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:assetCollection];
+                    //为Asset创建一个占位符，放到相册编辑请求中
+                    PHObjectPlaceholder *placeHolder = [assetRequest placeholderForCreatedAsset];
+                    //相册中添加照片
+                    [collectonRequest addAssets:@[placeHolder]];
+                    
+                    localIdentifier = placeHolder.localIdentifier;
+                } completionHandler:^(BOOL success, NSError *error) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                    if (success) {
+                        [[NSFileManager defaultManager] removeItemAtPath:[[imagePath stringByDeletingPathExtension] stringByAppendingPathExtension:@"key"] error:nil];
+                        [[NSFileManager defaultManager] removeItemAtPath:[[imagePath stringByDeletingPathExtension] stringByAppendingPathExtension:@"scale"] error:nil];
+                        //解密成功刷新解密列表
+                        [[NSNotificationCenter defaultCenter] postNotificationName:@"refleshPicture" object:self userInfo:nil];
+                        NSLog(@"保存图片成功!");
+                        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[self readFromPlist]];
+                        [dict setObject:localIdentifier forKey:[self showFileNameFromPath:imagePath]];
+                        [self writeDicToPlist:dict];
+                    } else {
+                        NSLog(@"保存图片失败:%@", error);
+                    }
+                    });
+                }];
+            }
+        }];
 
-        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+
+//        [_myAlbum saveImagePath:imagePath];
+//        [[NSNotificationCenter defaultCenter] postNotificationName:@"refleshPicture" object:self userInfo:nil];
+       /* [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
             [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:[NSURL fileURLWithPath:[[contentPath stringByDeletingPathExtension] stringByAppendingPathExtension:@"jpg"]]];
         } completionHandler:^(BOOL success, NSError * _Nullable error) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -308,15 +449,13 @@ static NSString * const reuseIdentifier = @"Cell";
                     [[NSFileManager defaultManager] removeItemAtPath:[[contentPath stringByDeletingPathExtension] stringByAppendingPathExtension:@"scale"] error:nil];
                     //解密成功刷新解密列表
                     [[NSNotificationCenter defaultCenter] postNotificationName:@"refleshPicture" object:self userInfo:nil];
-                    
-                    
                     NSLog(@"保存成功！");
                 } else if (error) {
                     NSLog(@"保存照片出错:%@",error.localizedDescription);
                 }
             });
 
-        }];
+        }];*/
     
     }else
     {
@@ -375,7 +514,7 @@ static NSString * const reuseIdentifier = @"Cell";
 {
     UIView *view = [[UIView alloc]initWithFrame:CGRectZero];
     [self.view addSubview:view];
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = [UIColor clearColor];
     UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
     CGFloat margin = 4;
     CGFloat itemWH = (kScreenWidth - 2 * margin - 4) / 4 - margin;
@@ -397,47 +536,32 @@ static NSString * const reuseIdentifier = @"Cell";
     self.navigationItem.title = @"选择图片";
     
     _imageFormatName = FICDPhotoSquareImage32BitBGRAFormatName;
-    
-    UIView *bottomToolBar = [[UIView alloc] initWithFrame:CGRectMake(0, kScreenHeight - 50, kScreenWidth, 50)];
-    CGFloat rgb = 253 / 255.0;
-    bottomToolBar.backgroundColor = [UIColor colorWithRed:rgb green:rgb blue:rgb alpha:1.0];
-    self.decrytionBtn = [[UIButton alloc]initWithFrame:CGRectMake(kScreenWidth - 44 - 12, 3, 44, 44)];
-    [self.view addSubview:bottomToolBar];
-    
-//    UIColor *oKButtonTitleColorNormal   = [UIColor colorWithRed:(83/255.0) green:(179/255.0) blue:(17/255.0) alpha:1.0];
-//    UIColor *oKButtonTitleColorDisabled = [UIColor colorWithRed:(83/255.0) green:(179/255.0) blue:(17/255.0) alpha:0.5];
-    UIColor *oKButtonTitleColorNormal   = [UIColor colorWithRed:17.0/255.0 green:205.0/255.0 blue:110.0/255.0 alpha:1.0];
-    UIColor *oKButtonTitleColorDisabled = [UIColor colorWithRed:17.0/255.0 green:205.0/255.0 blue:110.0/255.0 alpha:0.5];
-    
-    self.decrytionBtn.titleLabel.font = [UIFont systemFontOfSize:16];
+    self.decrytionBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height-50, self.view.frame.size.width*0.60, 50)];
     self.decrytionBtn.enabled = NO;
-    [self.decrytionBtn addTarget:self action:@selector(decryptionImage:) forControlEvents:UIControlEventTouchUpInside];
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.frame = CGRectMake(0, 0, self.view.frame.size.width*0.68, 50);
+    gradientLayer.endPoint = CGPointMake(1, 0);
+    gradientLayer.locations = @[@(0.1),@(1.0)];
+    [gradientLayer setColors:@[(id)[RGB(0x31C2B1,1) CGColor],(id)[RGB(0x1C27C,1) CGColor]]];
+    
+    [self.decrytionBtn.layer addSublayer:gradientLayer];
+    self.decrytionBtn.titleLabel.font = [UIFont systemFontOfSize:16.0];
     [self.decrytionBtn setTitle:@"解密" forState:UIControlStateNormal];
+    [self.decrytionBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.decrytionBtn addTarget:self action:@selector(decryptionImage:) forControlEvents:UIControlEventTouchUpInside];
     [self.decrytionBtn setTitle:@"解密" forState:UIControlStateDisabled];
-    [self.decrytionBtn setTitleColor:oKButtonTitleColorNormal forState:UIControlStateNormal];
-    [self.decrytionBtn setTitleColor:oKButtonTitleColorDisabled forState:UIControlStateDisabled];
-    
-    UIView *divide = [[UIView alloc] init];
-    CGFloat rgb2 = 222 / 255.0;
-    divide.backgroundColor = [UIColor colorWithRed:rgb2 green:rgb2 blue:rgb2 alpha:1.0];
-    divide.frame = CGRectMake(0, 0, self.view.tz_width, 1);
-    
-    self.shareBtn = [[UIButton alloc]init];
+    [self.view addSubview:self.decrytionBtn];
+    self.shareBtn = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width*0.6, self.view.frame.size.height-50, self.view.frame.size.width*0.4, 50)];
     self.shareBtn.enabled = NO;
-    [self.shareBtn setTitleColor:oKButtonTitleColorNormal forState:UIControlStateNormal];
-    [self.shareBtn setTitleColor:oKButtonTitleColorDisabled forState:UIControlStateDisabled];
-    [bottomToolBar addSubview:self.shareBtn];
-    [self.shareBtn mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.centerY.equalTo(bottomToolBar);
-        make.left.equalTo(bottomToolBar).offset(10);
-        make.size.mas_offset(CGSizeMake(44, 44));
-    }];
     [self.shareBtn setTitle:@"共享" forState:UIControlStateNormal];
-    [self.shareBtn setTitleColor:oKButtonTitleColorNormal forState:UIControlStateNormal];
+    [self.shareBtn setTitle:@"共享" forState:UIControlStateDisabled];
+    self.shareBtn.titleLabel.font = [UIFont systemFontOfSize:16.0];
+    self.shareBtn.backgroundColor = [UIColor whiteColor];
+    [self.shareBtn setTitleColor:RGB(0x31c27c, 1) forState:UIControlStateNormal];
     [self.shareBtn addTarget:self action:@selector(shareContent:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.shareBtn];
+   
     
-    [bottomToolBar addSubview:divide];
-    [bottomToolBar addSubview:self.decrytionBtn];
 }
 - (void)cancel
 {

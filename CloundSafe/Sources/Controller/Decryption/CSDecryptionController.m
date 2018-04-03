@@ -15,6 +15,8 @@
 #import "CSPictureCollectionController.h"
 #import "CSVedioCollectionController.h"
 #import "UINavigationController+FDFullscreenPopGesture.h"
+#import "CSGestureResultViewController.h"
+#import "CSGestureViewController.h"
 @interface CSDecryptionController ()
 @property (nonatomic, strong) CSItemView *picture;
 @property (nonatomic, strong) CSItemView *vedio;
@@ -23,6 +25,8 @@
 @property (nonatomic, strong) NSMutableArray *selections;
 @property (nonatomic, strong) UIView *picView;
 @property (nonatomic, strong) UIView *videoView;
+@property (nonatomic, strong) UIImageView *backgroundImageView;
+@property (nonatomic, strong) UIImageView *decryptionImageView;
 @end
 
 @implementation CSDecryptionController
@@ -45,8 +49,9 @@
     self.navigationController.fd_interactivePopMaxAllowedInitialDistanceToLeftEdge = kScreenWidth/2;
     [self initSubView];
     [self addConstraintForSubView];
-    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"decrytion_background"]];
-    self.view.transform=CGAffineTransformMakeScale(1.2, 1.2);
+    self.view.backgroundColor = [UIColor clearColor];
+   // self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"decrytion_background"]];
+//    self.view.transform=CGAffineTransformMakeScale(1.2, 1.2);
     self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:20.0/255.0 green:205.0/255.0 blue:111.0/255.0 alpha:1.0];
 //    self.imageArr = [CSDecryptionController loadPhoto];
     
@@ -139,30 +144,59 @@
     UIView *view = gesture.view;
     UIView *superView = view.superview;
     UILabel *label = [superView viewWithTag:10];
-    if ([label.text isEqualToString:@"图片解密"])
-    {
-        CSPictureCollectionController *vc = [[CSPictureCollectionController alloc]init];
-
-        [self.navigationController pushViewController:vc animated:YES];
+    if ([label.text isEqualToString:@"图片"])
+    {   
+        NSString *userName = [userDefaults valueForKey:@"userName"];
+        if([[NSUserDefaults standardUserDefaults]objectForKey:userName]==nil){
+            CSGestureViewController *vc = [[CSGestureViewController alloc]init];
+            [self.navigationController pushViewController:vc animated:YES];
+            [userDefaults setValue:@"YES" forKey:@"isPicture"];
+            [userDefaults synchronize];
+        }
+        else{
+            CSGestureResultViewController *myEncryption = [[CSGestureResultViewController alloc]init];
+            [self.navigationController pushViewController:myEncryption animated:YES];
+            [userDefaults setValue:@"YES" forKey:@"isPicture"];
+            [userDefaults synchronize];
+            NSLog(@"现在ispicture是%@",[userDefaults valueForKey:@"isPicture"]);
+        }
         
     }else
     {
-
-        CSVedioCollectionController *vc = [[CSVedioCollectionController alloc]init];
-        [self.navigationController pushViewController:vc animated:YES];
+        NSString *userName = [userDefaults valueForKey:@"userName"];
+        if([[NSUserDefaults standardUserDefaults]objectForKey:userName]==nil){
+            CSGestureViewController *vc = [[CSGestureViewController alloc]init];
+            [self.navigationController pushViewController:vc animated:YES];
+            [userDefaults setValue:@"NO" forKey:@"isPicture"];
+            [userDefaults synchronize];
+        }
+        else{
+            CSGestureResultViewController *myEncryption = [[CSGestureResultViewController alloc]init];
+            [self.navigationController pushViewController:myEncryption animated:YES];
+            [userDefaults setValue:@"NO" forKey:@"isPicture"];
+            [userDefaults synchronize];
+            NSLog(@"现在ispicture是%@",[userDefaults valueForKey:@"isPicture"]);
+        }
         
     }
 }
 - (void)initSubView
 {
-
+    UIImage *backgroundImage = [UIImage imageNamed:@"jiami_banner"];
+    _backgroundImageView = [[UIImageView alloc]initWithImage:backgroundImage];
+    _backgroundImageView.frame = CGRectMake(0, 0, self.view.frame.size.width, backgroundImage.size.height*(self.view.frame.size.width/backgroundImage.size.width));
+    [self.view addSubview:_backgroundImageView];
+    UIImage *decryptionImage = [UIImage imageNamed:@"title_jiemi"];
+    self.decryptionImageView = [[UIImageView alloc]initWithImage:decryptionImage];
+    self.decryptionImageView.frame = CGRectMake(29, self.backgroundImageView.frame.size.height+27, decryptionImage.size.width, decryptionImage.size.height);
+    [self.view addSubview:self.decryptionImageView];
     self.picView = [[UIView alloc]init];
     self.videoView = [[UIView alloc]init];
     [self.view addSubview:self.picView];
     [self.view addSubview:self.videoView];
     [self.picView mas_updateConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.view);
-        make.top.mas_equalTo(kScreenHeight/3);
+        make.top.mas_equalTo(_backgroundImageView.frame.size.height+150);
         make.width.mas_equalTo(kScreenWidth/3);
         make.height.mas_equalTo(120);
     }];
@@ -181,16 +215,18 @@
     
     UITapGestureRecognizer *clickPic = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(onClick:)];
     [self.picture addGestureRecognizer:clickPic];
-    self.picture.iconView.image = [UIImage imageNamed:@"picture"];
-    self.picture.label.text = @"图片解密";
-    self.picture.label.textColor = [UIColor colorWithRed:16.0/255.0 green:232.0/255.0 blue:96.0/255.0 alpha:1.0];
+    self.picture.iconView.image = [UIImage imageNamed:@"jiami_picture"];
+    self.picture.label.text = @"图片";
+    self.picture.label.textAlignment = NSTextAlignmentCenter;
+    self.picture.label.textColor = [UIColor colorWithRed:0.18 green:0.22 blue:0.20 alpha:1.0];
     [self.picture addSubviewConstraint];
     
     UITapGestureRecognizer *clickVedio = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(onClick:)];
     [self.vedio.iconView addGestureRecognizer:clickVedio];
-    self.vedio.iconView.image = [UIImage imageNamed:@"vedio"];
-    self.vedio.label.text = @"视频解密";
-    self.vedio.label.textColor = [UIColor colorWithRed:16.0/255.0 green:232.0/255.0 blue:96.0/255.0 alpha:1.0];
+    self.vedio.iconView.image = [UIImage imageNamed:@"jiami_media"];
+    self.vedio.label.text = @"视频";
+    self.vedio.label.textAlignment = NSTextAlignmentCenter;
+    self.vedio.label.textColor = [UIColor colorWithRed:0.18 green:0.22 blue:0.20 alpha:1.0];
     [self.vedio addSubviewConstraint];
 
 }

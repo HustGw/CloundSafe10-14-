@@ -10,6 +10,8 @@
 #import "CSCollectionCell.h"
 #import "UIView+Layout.h"
 #import "EXTScope.h"
+
+static BOOL hasSlectedAllPhoto = NO;
 @interface CSDisplayDecryptionVedioViewContorller ()<UICollectionViewDataSource,
 UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,CSFullScreenPictureDisplayDelegate,MWPhotoBrowserDelegate>
 @property (nonatomic, strong) UICollectionView *collectionView;
@@ -17,6 +19,7 @@ UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,CSFullScreenPictureD
 @property (nonatomic, strong) UIButton *deleteVedioButton;
 @property (nonatomic, strong) NSMutableArray *selectedVedios;
 @property (nonatomic, strong) NSArray *displayVedios;
+@property (nonatomic, strong) UIButton *allChoose;
 
 @end
 
@@ -126,6 +129,12 @@ static NSString * const reuseIdentifier = @"DecryptionVedioCell";
     [cell setPlayerImageView:imageView];
     [cell setImageFormatName:self.imageFormatName];
     [cell setPicture:picture];
+    if (hasSlectedAllPhoto) {
+        cell.selectPhotoButton.selected = YES;
+    } else {
+        cell.selectPhotoButton.selected = NO;
+    }
+    cell.selectImageView.image =  cell.selectPhotoButton.isSelected ? [UIImage imageNamed:@"photo_sel"] : [UIImage imageNamed:@"photo_des"];
     cell.imageIdentifier = [[picture sourceImageURL] path];
     cell.delegate = self;
     __weak typeof(cell) weakCell = cell;
@@ -190,6 +199,23 @@ static NSString * const reuseIdentifier = @"DecryptionVedioCell";
     [self.deleteVedioButton setTitleColor:oKButtonTitleColorNormal forState:UIControlStateNormal];
     [self.deleteVedioButton setTitleColor:oKButtonTitleColorDisabled forState:UIControlStateDisabled];
     
+    self.allChoose = [[UIButton alloc]init];
+    self.allChoose.titleLabel.font = [UIFont systemFontOfSize:16];
+    [self.allChoose addTarget:self action:@selector(allChooseVideo) forControlEvents:UIControlEventTouchUpInside];
+    //    self.allChoose.enabled = YES;
+    [bottomToolBar addSubview:self.allChoose];
+    [self.allChoose mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.centerY.equalTo(bottomToolBar);
+        make.left.equalTo(bottomToolBar).offset(10);
+        make.size.mas_offset(CGSizeMake(44, 44));
+    }];
+    [self.allChoose setTitle:@"全选" forState:UIControlStateNormal];
+    [self.allChoose setTitle:@"全选" forState:UIControlStateDisabled];
+    [self.allChoose setTitleColor:oKButtonTitleColorNormal forState:
+     UIControlStateNormal];
+    [self.allChoose setTitleColor:oKButtonTitleColorDisabled forState:
+     UIControlStateDisabled];
+    
     UIView *divide = [[UIView alloc] init];
     CGFloat rgb2 = 222 / 255.0;
     divide.backgroundColor = [UIColor colorWithRed:rgb2 green:rgb2 blue:rgb2 alpha:1.0];
@@ -198,6 +224,16 @@ static NSString * const reuseIdentifier = @"DecryptionVedioCell";
     [bottomToolBar addSubview:self.deleteVedioButton];
 }
 
+-(void)allChooseVideo
+{
+    hasSlectedAllPhoto = !hasSlectedAllPhoto;
+    [self.collectionView reloadData];
+    self.allChoose.selected = !self.allChoose.selected && self.vedios.count;
+    self.deleteVedioButton.enabled = hasSlectedAllPhoto && self.vedios.count;
+    if (hasSlectedAllPhoto) {
+        self.selectedVedios = [self.vedios mutableCopy];
+    }
+}
 - (void)deleteVedio
 {
     NSMutableArray *vedios = [self.vedios mutableCopy];

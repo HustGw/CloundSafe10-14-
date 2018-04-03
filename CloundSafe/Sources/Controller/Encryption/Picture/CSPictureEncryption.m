@@ -7,7 +7,7 @@
 //
 
 #import "CSPictureEncryption.h"
-#import "CSEncrytionController.h"
+#import "UIImage+Thumbnail.h"
 #import <Accelerate/Accelerate.h>
 @interface CSPictureEncryption()
 @property (nonatomic, strong) NSArray *images;
@@ -224,8 +224,8 @@
 
     //生成缩略图
     UIImage *image = [UIImage imageWithContentsOfFile:imgURL];
-    UIImage *thumbImage = [CSEncrytionController thumbnailWithImageWithoutScale:image size:CGSizeMake(60, 60)];
-//    UIImage *i = [self boxblurImage:image withBlurNumber:50];
+    UIImage *thumbImage = [image imageByScalingAndCroppingForSize:(CGSize){20, 20}];
+
     NSString *scaleName = [[[soucreImageURL lastPathComponent] stringByDeletingPathExtension] stringByAppendingPathExtension:@"scale"];
     NSString *imageScalePath = [NSString stringWithFormat:@"%@/%@/%@/%@",DocumentPath,userName,self.folderName,scaleName];
     NSData *imagedata = UIImagePNGRepresentation(thumbImage);

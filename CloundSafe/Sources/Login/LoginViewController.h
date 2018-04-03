@@ -8,5 +8,9 @@
 
 #import <UIKit/UIKit.h>
 @interface LoginViewController : UIViewController
+@property (nonatomic, strong) UIButton *Checkbox;
+@property (nonatomic, assign) BOOL CheckboxBtn;
+@property (nonatomic, retain) UITextField *UseforForget;
+- (BOOL)CheckboxClick:(UIButton*)btn;
 
 @end

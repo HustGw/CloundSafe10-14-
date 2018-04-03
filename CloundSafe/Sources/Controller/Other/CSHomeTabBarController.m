@@ -26,20 +26,24 @@
     UITabBarItem *item2 = [tabBar.items objectAtIndex:2];//我的
 
     // 对item设置相应地图片
-    item0.selectedImage = [[UIImage imageNamed:@"encrytion_selected"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];;
-    item0.image = [[UIImage imageNamed:@"encrytion"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    item0.selectedImage = [[UIImage imageNamed:@"tag_jiami_sel"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    item0.title = nil;
+    item0.image = [[UIImage imageNamed:@"tag_jiami_nor"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     
-    item1.selectedImage = [[UIImage imageNamed:@"decrytion_selected"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];;
-    item1.image = [[UIImage imageNamed:@"decrytion"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    
-    item2.selectedImage = [[UIImage imageNamed:@"myself_selected"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    item2.image = [[UIImage imageNamed:@"myself"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    
+    item1.selectedImage = [[UIImage imageNamed:@"tag_jiemi_sel"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    item1.image = [[UIImage imageNamed:@"tag_jiemi_nor"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    item1.title = nil;
+    item2.selectedImage = [[UIImage imageNamed:@"tag_my_sel"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    item2.image = [[UIImage imageNamed:@"tag_my_nor"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    item2.title = nil;
     //这里是去掉 系统tabbar上黑线的方法
     self.tabBar.backgroundImage = [[UIImage alloc]init];
     self.tabBar.shadowImage = [[UIImage alloc]init];
-//    self.tabBar.backgroundColor = [UIColor clearColor];
-
+    //tabBar中的item图片居中显示
+    item0.imageInsets = UIEdgeInsetsMake(5.0, 0, -5.0, 0);
+    item1.imageInsets = UIEdgeInsetsMake(5.0, 0, -5.0, 0);
+    item2.imageInsets = UIEdgeInsetsMake(5.0, 0, -5.0, 0);
+    
     //设置item字体颜色
     self.tabBar.tintColor = CSCloundSafeColor;
 }

@@ -22,7 +22,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     self.view.backgroundColor = [UIColor whiteColor];
     
     UIBarButtonItem *leftButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"backIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(regBackToForwardViewController)];
@@ -315,13 +314,23 @@
 - (void)configureTextField
 {
     
+    
     self.usernameField = [[MyTextField alloc] init];
+    if ([self.UseforForget1.text isEqual:@""]) {
+        NSLog(@"Lisa.usernameField.text=%@",self.usernameField.text);
+        self.usernameField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"请输入手机号"
+                                                                                                                                   attributes:@{NSForegroundColorAttributeName:[UIColor colorWithWhite:0.6 alpha:1.000],
+                                                                                                                                                NSFontAttributeName:[UIFont italicSystemFontOfSize:14]}];
+    } else {
+         self.usernameField.text=self.UseforForget1.text;
+    }
+   
     
     self.usernameField.textColor = [UIColor blackColor];
     self.usernameField.font = [UIFont systemFontOfSize:14];
-    self.usernameField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"请输入手机号"
-                                                                               attributes:@{NSForegroundColorAttributeName:[UIColor colorWithWhite:0.6 alpha:1.000],
-                                                                                            NSFontAttributeName:[UIFont italicSystemFontOfSize:14]}];
+//    self.usernameField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"请输入手机号"
+//                                                                               attributes:@{NSForegroundColorAttributeName:[UIColor colorWithWhite:0.6 alpha:1.000],
+//                                                                                            NSFontAttributeName:[UIFont italicSystemFontOfSize:14]}];
     self.usernameField.keyboardType = UIKeyboardTypeNumberPad;
     self.usernameField.returnKeyType = UIReturnKeyNext;
     self.usernameField.autocapitalizationType = UITextAutocapitalizationTypeNone;
@@ -333,7 +342,7 @@
     self.usernameField.leftView = self.leftUsernameView;
     self.usernameField.leftViewMode = UITextFieldViewModeAlways;
     [self.containView addSubview:self.usernameField];
-    
+    NSLog(@"Lisa.usernameField.text=%@",self.usernameField.text);
     
     self.verifyCodeField = [[MyTextField alloc] init];
     
@@ -411,7 +420,7 @@
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
     [self.passwordField resignFirstResponder];
-    [self.usernameField resignFirstResponder];
+//    [self.usernameField resignFirstResponder];
     [self.verifyCodeField resignFirstResponder];
 }
 

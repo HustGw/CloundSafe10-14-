@@ -10,6 +10,8 @@
 
 @interface CSDisplayPictureController : UIViewController
 @property (nonatomic, strong) UIImage *image;
+@property (nonatomic, strong) UIButton *decrytionBtn;
+@property (nonatomic, strong) UIButton *shareBtn;
 - (id)initWithImage:(UIImage *)image;
 - (void)setImagePath:(NSString *)path;
 @end
