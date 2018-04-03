@@ -15,8 +15,13 @@
 #import "CSImportContentController.h"
 #import "CSPhoneBookController.h"
 #import "CSUseguidesController.h"
+#import "CSUseguideAllViewController.h"
 #import "CSLastDecryptionViewController.h"
+#import "CSMyEncryptionController.h"
+#import "CSGestureResultViewController.h"
+#import "CSGestureViewController.h"
 
+static BOOL RemberUsername;
 @interface CSMyInfoController ()<UITableViewDelegate, UITableViewDataSource,MWPhotoBrowserDelegate ,UIAlertViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSArray *photos;
@@ -26,8 +31,11 @@
 @implementation CSMyInfoController
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
     
+    [super viewDidLoad];
+    NSUserDefaults *userDefaultLisa = [NSUserDefaults standardUserDefaults];
+    NSNumber *Hello=[userDefaultLisa valueForKey:@"hello"];
+    RemberUsername=Hello.boolValue;
     [self initTableView];
     self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:20.0/255.0 green:205.0/255.0 blue:111.0/255.0 alpha:1.0];
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
@@ -35,7 +43,8 @@
 - (void)initTableView
 {
     [self.view addSubview:[[UIView alloc]initWithFrame:CGRectZero]];
-    self.tableView = [[UITableView alloc]init];
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+    self.tableView.estimatedSectionHeaderHeight = 0;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
@@ -59,7 +68,7 @@
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 20;
+    return 10;
 }
 //- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
 //{
@@ -78,6 +87,9 @@
 //    view.backgroundColor = [UIColor clearColor];
 //    return view;
 //}
+
+
+
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (section == 0)
@@ -117,7 +129,11 @@
         {
             cell.textLabel.text = @"共享密文";
             cell.imageView.image = [UIImage imageNamed:@"share"];
-        }else
+        }/*else if (indexPath.row == 4)
+        {
+            cell.textLabel.text = @"我的加密";
+            cell.imageView.image = [UIImage imageNamed:@"share"];
+        }*/else
         {
             cell.textLabel.text = @"修改密码";
             cell.imageView.image = [UIImage imageNamed:@"pen"];
@@ -176,7 +192,20 @@
         {
             CSShareContentController *shareContent = [[CSShareContentController alloc]init];
             [self.navigationController pushViewController:shareContent animated:YES];
-        }else//修改密码
+        }/*else if (indexPath.row == 4)//我的加密
+        {
+//           CSMyEncryptionController *myEncryption = [[CSMyEncryptionController alloc]init];
+//           [self.navigationController pushViewController:myEncryption animated:YES];
+            NSString *userName = [userDefaults valueForKey:@"userName"];
+            if([[NSUserDefaults standardUserDefaults]objectForKey:userName]==nil){
+                CSGestureViewController *vc = [[CSGestureViewController alloc]init];
+                [self.navigationController pushViewController:vc animated:YES];
+            }
+            else{
+            CSGestureResultViewController *myEncryption = [[CSGestureResultViewController alloc]init];
+            [self.navigationController pushViewController:myEncryption animated:YES];
+            }
+        }*/else//修改密码
         {
             ChangePasswordViewController *resetPassword = [[ChangePasswordViewController alloc]init];
             [self.navigationController pushViewController:resetPassword animated:YES];
@@ -190,7 +219,7 @@
 
         }else if(indexPath.row == 1)
         {
-            CSUseguidesController *useguides = [[CSUseguidesController alloc]init];
+            CSUseguideAllViewController *useguides = [[CSUseguideAllViewController alloc]init];
             [self.navigationController pushViewController:useguides animated:YES];
         }else
         {
@@ -355,12 +384,15 @@
                 NSData *base64Data = [data base64EncodedDataWithOptions:0];
                 // 将加密后的文件存储用户主目录下
                 [base64Data writeToFile:dbPath atomically:YES];
-                
-                //清除用户信息
-                [userDefaults removeObjectForKey:@"userPassword"];
-                [userDefaults removeObjectForKey:@"userName"];
-                [userDefaults setObject:@(NO) forKey:ISLOGIN];
-                
+                if (RemberUsername) {
+                    [userDefaults removeObjectForKey:@"userPassword"];
+                    [userDefaults setObject:@(NO) forKey:ISLOGIN];
+                } else {
+                    [userDefaults removeObjectForKey:@"userPassword"];
+                    [userDefaults removeObjectForKey:@"userName"];
+                    [userDefaults setObject:@(NO) forKey:ISLOGIN];
+                }
+
             }else
             {
                 [self alert:@"用户已被注销！"];

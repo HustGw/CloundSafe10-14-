@@ -24,4 +24,5 @@
 @property (nonatomic, copy) NSString *imageFormatName;
 @property (nonatomic, strong) NSString *imageIdentifier;
 @property (nonatomic, strong) UIImageView *playerImageView;
+@property (strong, nonatomic) UIImageView *selectImageView;
 @end

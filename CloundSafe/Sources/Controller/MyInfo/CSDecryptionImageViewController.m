@@ -14,6 +14,7 @@
 #import "FICImageCache.h"
 #import "UIView+Layout.h"
 
+static BOOL hasSlectedAllPhoto = NO;
 @interface CSDecryptionImageViewController ()<CSFullScreenPictureDisplayDelegate, UICollectionViewDelegate, UICollectionViewDataSource, MWPhotoBrowserDelegate>
 @property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) NSString *imageFormatName;
@@ -46,6 +47,7 @@ static NSString * const reuseIdentifier = @"DecryptionImageCell";
 }
 - (void)back
 {
+    hasSlectedAllPhoto = NO;
     [self.navigationController popViewControllerAnimated:YES];
 }
 #pragma mark - MWPhotoBrowserDelegate
@@ -122,6 +124,12 @@ static NSString * const reuseIdentifier = @"DecryptionImageCell";
     CSPicture *picture = self.images[indexPath.row];
     [cell setImageFormatName:self.imageFormatName];
     [cell setPicture:picture];
+    if (hasSlectedAllPhoto) {
+        cell.selectPhotoButton.selected = YES;
+    } else {
+        cell.selectPhotoButton.selected = NO;
+    }
+    cell.selectImageView.image =  cell.selectPhotoButton.isSelected ? [UIImage imageNamed:@"photo_sel"] : [UIImage imageNamed:@"photo_des"];
     cell.imageIdentifier = [[picture sourceImageURL] path];
     cell.delegate = self;
     __weak typeof(cell) weakCell = cell;
@@ -189,8 +197,8 @@ static NSString * const reuseIdentifier = @"DecryptionImageCell";
     
     self.allChoose = [[UIButton alloc]init];
     self.allChoose.titleLabel.font = [UIFont systemFontOfSize:16];
-    [self.allChoose addTarget:self action:@selector(allChooseImage:WithCell:) forControlEvents:UIControlEventTouchUpInside];
-    self.allChoose.enabled = YES;
+    [self.allChoose addTarget:self action:@selector(allChooseImage) forControlEvents:UIControlEventTouchUpInside];
+//    self.allChoose.enabled = YES;
     [bottomToolBar addSubview:self.allChoose];
     [self.allChoose mas_updateConstraints:^(MASConstraintMaker *make) {
         make.centerY.equalTo(bottomToolBar);
@@ -213,20 +221,19 @@ static NSString * const reuseIdentifier = @"DecryptionImageCell";
     [bottomToolBar addSubview:self.deleteImageButton];
 }
 
-//- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-//{
-//    CSPicture *picture = [self.images objectAtIndex:indexPath.row];
-//    [self.selectedImages removeObject:self.images[indexPath.row]];
-//    
-//}
--(void)allChooseImage:(NSIndexPath *)indexPath WithCell:(CSCollectionCell*)cell
+
+-(void)allChooseImage
 {
-    self.deleteImageButton.enabled = YES;
-    self.allChoose.enabled=NO;
-    if (cell.selectPhotoButton.selected ==NO)
-    {
-        [self.selectedImages addObject:self.images[indexPath.row]];
+//    self.deleteImageButton.enabled = YES;
+//    self.allChoose.enabled=NO;
+    hasSlectedAllPhoto = !hasSlectedAllPhoto;
+    [self.collectionView reloadData];
+    self.allChoose.selected = !self.allChoose.selected && self.images.count;
+    self.deleteImageButton.enabled = hasSlectedAllPhoto && self.images.count;
+    if (hasSlectedAllPhoto) {
+        self.selectedImages = [self.images mutableCopy];
     }
+
 }
 - (void)deleteImage
 {
@@ -241,6 +248,7 @@ static NSString * const reuseIdentifier = @"DecryptionImageCell";
             NSLog(@"删除失败！");
         }
     }
+    hasSlectedAllPhoto=NO;
     self.images = [images copy];
     [self.selectedImages removeAllObjects];
     self.deleteImageButton.enabled = NO;

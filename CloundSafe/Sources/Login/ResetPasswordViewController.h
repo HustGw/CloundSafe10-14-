@@ -15,7 +15,7 @@ typedef void(^CheckPhoneBlock)(BOOL isRegister);
 
 @property (nonatomic, strong) UIView      *containView;
 
-@property (nonatomic, strong) MyTextField *usernameField;
+@property (nonatomic, strong) UITextField *usernameField;
 @property (nonatomic, strong) MyTextField *passwordField;
 @property (nonatomic,strong) MyTextField *verifyCodeField;
 @property (nonatomic, strong) MBProgressHUD    *HUD;
@@ -29,4 +29,7 @@ typedef void(^CheckPhoneBlock)(BOOL isRegister);
 @property (nonatomic,assign) BOOL isReseting;
 @property (nonatomic, strong) NSString *state;
 @property (nonatomic, copy) CheckPhoneBlock checkPhone_t;
+@property (nonatomic,retain) UITextField* UseforForget1;
+@property (nonatomic, copy) NSString *number;
+
 @end

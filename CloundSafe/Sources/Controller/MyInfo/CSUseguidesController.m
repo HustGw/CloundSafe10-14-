@@ -39,9 +39,6 @@ static NSString *const description6=@"注意⚠️所有的图片、文件、视
     UIBarButtonItem *leftButton =[[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"backIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(backforward)];
     [leftButton setTintColor:[UIColor whiteColor]];
     [self.navigationItem setLeftBarButtonItem:leftButton];
-//    UIBarButtonItem *rightButton =[[UIBarButtonItem alloc]initWithTitle:@"下一页" style:UIBarButtonItemStylePlain target:self action:@selector(nextforward)];
-//    [rightButton setTintColor:[UIColor whiteColor]];
-//    [self.navigationItem setRightBarButtonItem:rightButton];
     self.ScrollView=[[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
     self.ScrollView.contentSize=CGSizeMake(self.view.bounds.size.width, 2.2*self.view.bounds.size.height);
     self.ScrollView.alwaysBounceVertical=YES;

@@ -7,7 +7,7 @@
 //
 
 #import "CSShareContentController.h"
-
 @interface CSImportContentController : CSShareContentController
+
 
 @end

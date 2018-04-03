@@ -213,7 +213,7 @@
     NSString *userName = [userDefaults valueForKey:@"userName"];
     NSString *photosPath = [NSString stringWithFormat:@"%@/%@",DocumentPath, userName];
     NSFileManager *fileManage = [NSFileManager defaultManager];
-    //NSLog(@"%@",photosPath);
+    NSLog(@"Lisa.photopath=%@",photosPath);
     
     if ([fileManage fileExistsAtPath:photosPath])
     {
@@ -233,7 +233,9 @@
                         if ([[importObj pathExtension] isEqualToString:CipherExtension])
                         {
                             NSString *imagePath = [NSString stringWithFormat:@"%@/%@",importDic,importObj];
+                            NSLog(@"Lisa.photopath.imagepath=%@",imagePath);
                             NSURL *url = [NSURL URLWithString:imagePath];
+                            NSLog(@"Lisa.photopath.url=%@",url);
                             CSPicture *picture = [[CSPicture alloc]init];
                             [picture setSourceImageURL:url];
                             [photoArr addObject:picture];

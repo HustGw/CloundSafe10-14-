@@ -8,13 +8,21 @@
 
 #import "CSDisplayPictureController.h"
 #import "UINavigationController+FDFullscreenPopGesture.h"
-@interface CSDisplayPictureController ()
+#import <Photos/Photos.h>
+#import "MyAlbum.h"
+@interface CSDisplayPictureController (){
+    MyAlbum *_MyAlbum;
+}
 @property (nonatomic, strong) MBProgressHUD *HUD;
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) NSString *contentImagePath;
 @property (nonatomic, assign) BOOL isSaveImage;
 @property (nonatomic, strong) NSData *contentData;
 @property (nonatomic, strong) NSString *contentFile;
+
+
+
+
 @end
 
 @implementation CSDisplayPictureController
@@ -28,6 +36,10 @@
     }
     return self;
 }
+
+
+
+
 - (void) setImagePath:(NSString *)path
 {
     self.contentImagePath = [[path stringByDeletingPathExtension] stringByAppendingPathExtension:CipherExtension];
@@ -44,6 +56,7 @@
     [leftButton setTintColor:[UIColor whiteColor]];
     [self.navigationItem setLeftBarButtonItem:leftButton];
     self.navigationItem.title = @"解密图片";
+     _MyAlbum = [[MyAlbum alloc]initWithFolderName:@"云加密"];
     
     self.imageView = [[UIImageView alloc]init];
     self.imageView.clipsToBounds  = YES;
@@ -56,7 +69,7 @@
         make.left.right.bottom.equalTo(self.view);
     }];
     self.imageView.image = self.image;
-    
+    /*
     UIView *bottomToolBar = [[UIView alloc] initWithFrame:CGRectMake(0, kScreenHeight - 50, kScreenWidth, 50)];
     CGFloat rgb = 253 / 255.0;
     bottomToolBar.backgroundColor = [UIColor colorWithRed:rgb green:rgb blue:rgb alpha:1.0];
@@ -89,6 +102,32 @@
     
     [bottomToolBar addSubview:divide];
     [bottomToolBar addSubview:decrytionBtn];
+     */
+    self.decrytionBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height-50, self.view.frame.size.width*0.60, 50)];
+    self.decrytionBtn.enabled = NO;
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.frame = CGRectMake(0, 0, self.view.frame.size.width*0.68, 50);
+    gradientLayer.endPoint = CGPointMake(1, 0);
+    gradientLayer.locations = @[@(0.1),@(1.0)];
+    [gradientLayer setColors:@[(id)[RGB(0x31C2B1,1) CGColor],(id)[RGB(0x1C27C,1) CGColor]]];
+    [self.decrytionBtn.layer addSublayer:gradientLayer];
+    self.decrytionBtn.titleLabel.font = [UIFont systemFontOfSize:16.0];
+    [self.decrytionBtn setTitle:@"解密" forState:UIControlStateNormal];
+    [self.decrytionBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.decrytionBtn addTarget:self action:@selector(decryptionImage:) forControlEvents:UIControlEventTouchUpInside];
+    [self.decrytionBtn setTitle:@"解密" forState:UIControlStateDisabled];
+    [self.view addSubview:self.decrytionBtn];
+    self.shareBtn = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width*0.6, self.view.frame.size.height-50, self.view.frame.size.width*0.4, 50)];
+    self.shareBtn.enabled = NO;
+    [self.shareBtn setTitle:@"共享" forState:UIControlStateNormal];
+    [self.shareBtn setTitle:@"共享" forState:UIControlStateDisabled];
+    self.shareBtn.titleLabel.font = [UIFont systemFontOfSize:16.0];
+    self.shareBtn.backgroundColor = [UIColor whiteColor];
+    [self.shareBtn setTitleColor:RGB(0x31c27c, 1) forState:UIControlStateNormal];
+    [self.shareBtn addTarget:self action:@selector(shareContent:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.shareBtn];
+   // [self.navigationController.navigationBar.layer addSublayer:gradientLayer];
+    
 }
 #pragma mark - 共享
 - (void)shareContent:(UIButton *)button

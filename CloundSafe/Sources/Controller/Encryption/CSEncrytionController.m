@@ -18,6 +18,8 @@
 @property (nonatomic, strong) MBProgressHUD    *HUD;
 @property (nonatomic, strong) UIView *picView;
 @property (nonatomic, strong) UIView *videoView;
+@property(nonatomic,strong) UIImageView *backgroundImageView;
+@property (nonatomic,strong) UIImageView *decryptionImageView;
 @end
 
 @implementation CSEncrytionController
@@ -26,10 +28,12 @@
 {
     [super viewDidLoad];
     [self initSubView];
+
     [self addConstraintForSubView];
     self.navigationController.navigationBar.hidden = YES;
-    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"encrytion_background"]];
-    self.view.transform=CGAffineTransformMakeScale(1.2, 1.2);
+ //   self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"jiami_banner"]];
+    self.view.backgroundColor = [UIColor clearColor];
+//    self.view.transform=CGAffineTransformMakeScale(1.2, 1.2);
   
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
 }
@@ -39,7 +43,7 @@
     UIView *view = gesture.view;
     UIView *superView = view.superview;
     UILabel *label = [superView viewWithTag:10];
-    if ([label.text isEqualToString:@"图片加密"])
+    if ([label.text isEqualToString:@"图片"])
     {
         CSPictureEncryption *picEncryption = [[CSPictureEncryption alloc]initWithMaxCount:9];
         [picEncryption setResponder:self.view];
@@ -127,57 +131,23 @@
     [self presentViewController:alert animated:YES completion:nil];
 }
 
-/**
- *  返回图片的缩略图
- *
- *  @param image 图片
- *  @param asize 缩放比例
- *
- *  @return 缩略图
- */
-+ (UIImage *)thumbnailWithImageWithoutScale:(UIImage *)image size:(CGSize)asize
-{
-    UIImage *newimage;
-    if (nil == image)
-    {
-        newimage = nil;
-    }else
-    {
-        CGSize oldsize = image.size;
-        CGRect rect;
-        if (asize.width/asize.height > oldsize.width/oldsize.height)
-        {
-            rect.size.width = asize.height*oldsize.width/oldsize.height;
-            rect.size.height = asize.height;
-            rect.origin.x = (asize.width - rect.size.width)/2;
-            rect.origin.y = 0;
-        }else
-        {
-            rect.size.width = asize.width;
-            rect.size.height = asize.width*oldsize.height/oldsize.width;
-            rect.origin.x = 0;
-            rect.origin.y = (asize.height - rect.size.height)/2;
-        }
-        UIGraphicsBeginImageContext(asize);
-        CGContextRef context = UIGraphicsGetCurrentContext();
-        CGContextSetFillColorWithColor(context, [[UIColor clearColor] CGColor]);
-        UIRectFill(CGRectMake(0, 0, asize.width, asize.height));//clear background
-        [image drawInRect:rect];
-        newimage = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-    }
-    return newimage;
-}
 - (void)initSubView
 {
-    
+    UIImage *backgroundImage = [UIImage imageNamed:@"jiami_banner"];
+    _backgroundImageView = [[UIImageView alloc]initWithImage:backgroundImage];
+    _backgroundImageView.frame = CGRectMake(0, 0, self.view.frame.size.width, backgroundImage.size.height*(self.view.frame.size.width/backgroundImage.size.width));
+    UIImage *decryptionImage = [UIImage imageNamed:@"title_jiami"];
+    self.decryptionImageView = [[UIImageView alloc]initWithImage:decryptionImage];
+    self.decryptionImageView.frame = CGRectMake(29, self.backgroundImageView.frame.size.height+27, decryptionImage.size.width, decryptionImage.size.height);
+    [self.view addSubview:self.decryptionImageView];
+    [self.view addSubview:_backgroundImageView];
     self.picView = [[UIView alloc]init];
     self.videoView = [[UIView alloc]init];
     [self.view addSubview:self.picView];
     [self.view addSubview:self.videoView];
     [self.picView mas_updateConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.view);
-        make.top.mas_equalTo(kScreenHeight/3);
+        make.top.mas_equalTo(_backgroundImageView.frame.size.height+150);
         make.width.mas_equalTo(kScreenWidth/3);
         make.height.mas_equalTo(120);
     }];
@@ -196,16 +166,19 @@
     
     UITapGestureRecognizer *clickPic = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(onClick:)];
     [self.picture addGestureRecognizer:clickPic];
-    self.picture.iconView.image = [UIImage imageNamed:@"picture"];
-    self.picture.label.text = @"图片加密";
-    self.picture.label.textColor = [UIColor colorWithRed:16.0/255.0 green:232.0/255.0 blue:96.0/255.0 alpha:1.0];
+    self.picture.iconView.image = [UIImage imageNamed:@"jiami_picture"];
+    self.picture.label.text = @"图片";
+    self.picture.label.textColor = [UIColor colorWithRed:0.18 green:0.22 blue:0.20 alpha:1.0];
+    self.picture.label.textAlignment = NSTextAlignmentCenter;
     [self.picture addSubviewConstraint];
     
     UITapGestureRecognizer *clickVedio = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(onClick:)];
     [self.vedio.iconView addGestureRecognizer:clickVedio];
-    self.vedio.iconView.image = [UIImage imageNamed:@"vedio"];
-    self.vedio.label.text = @"视频加密";
-    self.vedio.label.textColor = [UIColor colorWithRed:16.0/255.0 green:232.0/255.0 blue:96.0/255.0 alpha:1.0];
+    self.vedio.iconView.image = [UIImage imageNamed:@"jiami_media"];
+    self.vedio.label.text = @"视频";
+    self.vedio.label.textAlignment = NSTextAlignmentCenter;
+    self.vedio.label.textColor = [UIColor colorWithRed:0.18 green:0.22 blue:0.20 alpha:1.0];
+    
     [self.vedio addSubviewConstraint];
     
 }

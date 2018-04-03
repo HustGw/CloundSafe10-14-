@@ -11,4 +11,5 @@
 @interface CSPhoneBookController : UITableViewController
 @property (nonatomic, strong) UILabel *contactAuthorizationLabel;
 - (void)getContact;
++(NSMutableArray*)sortObjectArray:(NSArray*)objectArray Key:(NSString *)key;
 @end

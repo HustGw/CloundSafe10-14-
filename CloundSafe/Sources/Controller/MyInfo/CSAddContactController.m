@@ -14,13 +14,24 @@
 #import "CSContact.h"
 #import "ContactBL.h"
 #import "CSContactNoteCell.h"
+#import "CSPhoneBookController.h"
+#import "BMChineseSort.h"
+
+
 @interface CSAddContactController ()
 @property (nonatomic, strong) NSMutableArray *phones;
 @property (nonatomic, strong) NSMutableArray *emails;
+@property (nonatomic, strong) UIView *textView;
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSString *note;
 @property (nonatomic, strong) UIButton *completeButton;
 @property (nonatomic, strong) UIButton *cancelButton;
+@property(nonatomic,strong) NSMutableArray *contactArr;
+@property (nonatomic, strong) NSArray *contacts;
+//排序后的出现过的拼音首字母数组
+@property(nonatomic,strong)NSMutableArray *indexArray;
+//排序好的结果数组
+@property(nonatomic,strong)NSMutableArray *letterResultArr;
 @end
 
 @implementation CSAddContactController
@@ -45,7 +56,7 @@
     [self.completeButton addTarget:self action:@selector(completeAddContact) forControlEvents:UIControlEventTouchUpInside];
     [self.completeButton setTitle:@"完成" forState:UIControlStateNormal];
     [self.completeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-
+    
     [self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithCustomView:self.completeButton]];
     
     self.cancelButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 35, 20)];
@@ -53,11 +64,98 @@
     [self.cancelButton addTarget:self action:@selector(cancel) forControlEvents:UIControlEventTouchUpInside];
     [self.cancelButton setTitle:@"取消" forState:UIControlStateNormal];
     [self.cancelButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-
+    
+    self.indexArray = [BMChineseSort IndexWithArray:_contacts Key:@"name"];
+    self.letterResultArr = [BMChineseSort sortObjectArray:_contacts Key:@"name"];
+    
     [self.navigationItem setLeftBarButtonItem:[[UIBarButtonItem alloc]initWithCustomView:self.cancelButton]];
     [self.tableView setTableFooterView:[[UIView alloc]init]];//清除tableView多余的分割线
-
+    //    self.textView = [[UIView alloc]initWithFrame:CGRectMake(0, 130, kScreenWidth, kScreenHeight-130)];
+    //    self.textView.layer.borderWidth=1.0;
+    //    self.textView.layer.borderColor=(__bridge CGColorRef _Nullable)([UIColor grayColor]);
+    //    [self.view addSubview:self.textView];
 }
+
+- (void)getContact
+{
+    CNAuthorizationStatus status = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
+    if (status == CNAuthorizationStatusAuthorized)
+    {//有权限时
+//        self.contactAuthorizationLabel.hidden = YES;
+        NSString *userName = [userDefaults valueForKey:@"userName"];
+        NSLog(@"Lisa.通讯录.username=%@",userName);
+        NSString *dbPath = [NSString stringWithFormat:@"%@/%@/%@",DocumentPath,userName,DBFILE_NAME];
+        NSLog(@"Lisa.PhoneBook.dbPath=%@",dbPath);
+        if (![[NSFileManager defaultManager] fileExistsAtPath:dbPath])//首次启动
+        {
+            
+            if ([CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts] == CNAuthorizationStatusAuthorized)
+            {//有权限访问
+                NSError *error = nil;
+                //创建数组,必须遵守CNKeyDescriptor协议,放入相应的字符串常量来获取对应的联系人信息
+                NSArray <id<CNKeyDescriptor>> *keysToFetch = @[
+                                                               CNContactGivenNameKey, CNContactFamilyNameKey,CNContactOrganizationNameKey,CNContactNoteKey,CNContactImageDataKey,CNContactPhoneNumbersKey,CNContactEmailAddressesKey,CNContactPostalAddressesKey,CNContactUrlAddressesKey];
+                //创建获取联系人的请求
+                CNContactFetchRequest *fetchRequest = [[CNContactFetchRequest alloc] initWithKeysToFetch:keysToFetch];
+                //遍历查询
+                //创建CNContactStore对象,用与获取和保存通讯录信息
+                self.contactArr = [[NSMutableArray alloc]init];
+                CNContactStore *contactStore = [[CNContactStore alloc] init];
+                [contactStore enumerateContactsWithFetchRequest:fetchRequest error:&error usingBlock:^(CNContact * _Nonnull contact, BOOL * _Nonnull stop) {
+                    if (!error) {
+                        CSContact *person = [[CSContact alloc]init];
+                        person.familyName = contact.familyName;
+                        NSLog(@"Lisa.通讯录首次.familyname=%@",person.familyName);
+                        person.givenName = contact.givenName;
+                        person.phoneNumbers = contact.phoneNumbers;
+                        //person.organizationName = contact.organizationName;
+                        //person.urlAddresses = contact.urlAddresses;
+                        //person.postalAddresses = contact.postalAddresses;
+                        person.emailAddresses = contact.emailAddresses;
+                        person.note = contact.note;
+                        person.name = [NSString stringWithFormat:@"%@%@",person.familyName, person.givenName];
+                        //person.imageData = contact.imageData;
+                        [self.contactArr addObject:person];
+                        
+                    }else{
+                        NSLog(@"error:%@", error.localizedDescription);
+                    }
+                }];
+                self.contacts = [[NSArray alloc]initWithArray:self.contactArr];
+                //创建数据库，存储联系人
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
+                    ContactBL *contactBL = [[ContactBL alloc]init];
+                    for (int i =0; i<self.contacts.count; ++i)
+                    {
+                        CSContact *contact = self.contacts[i];
+                        contact.ID = i+1;
+                        [contactBL saveContact:contact];
+                    }
+                    
+                });
+                
+                
+            }else
+            {//无权限访问
+                NSLog(@"拒绝访问通讯录");
+            }
+            
+            
+        }
+        else //非首次启动,从数据库加载数据
+        {
+            ContactBL *contactBL = [[ContactBL alloc]init];
+            self.contacts = [contactBL findAll];
+        }
+    }
+    else
+    {
+//        self.contactAuthorizationLabel.hidden = NO;
+        NSLog(@"您未开启通讯录权限,请前往设置中心开启");
+    }
+    
+}
+
 
 - (void)completeAddContact
 {
@@ -105,6 +203,10 @@
             ContactBL *contactBL = [[ContactBL alloc]init];
             [contactBL insertContact:[self contactWithName:self.name Phones:self.phones emails:self.emails andNote:self.note]];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"contactUpdated" object:nil];
+             [self getContact];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refleshArrayOfNewContact) name:@"contactUpdated" object:nil];
+           
+
             [self.navigationController popViewControllerAnimated:YES];
         }
     }else
@@ -114,12 +216,84 @@
         UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"我知道了" style:UIAlertActionStyleDefault handler:nil];
         [alert addAction:cancel];
         [self presentViewController:alert animated:YES completion:nil];
-
+        
     }
-
-//    NSLog(@"phone ->%@",self.phones);
-//    NSLog(@"email ->%@",self.emails);
+    
+    //    NSLog(@"phone ->%@",self.phones);
+    //    NSLog(@"email ->%@",self.emails);
 }
+
+- (void)refleshArrayOfNewContact
+{
+    ContactBL *contactBL = [[ContactBL alloc]init];
+    self.contacts = [self removeRepeatedContact:[contactBL findAll]];
+    self.indexArray = [BMChineseSort IndexWithArray:_contacts Key:@"name"];
+    self.letterResultArr = [BMChineseSort sortObjectArray:_contacts Key:@"name"];
+    [self.tableView reloadData];
+}
+- (NSArray *)removeRepeatedContact:(NSArray *)soucres
+{
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc]init];
+    for (int i = 0; i < soucres.count; ++i)
+    {
+        CSContact *contact = soucres[i];
+        if (![dict valueForKey:contact.name])
+        {
+            [dict setValue:contact forKey:contact.name];
+        }else
+        {
+            CSContact *person = [dict valueForKey:contact.name];
+            
+            NSMutableArray *phones = [[NSMutableArray alloc]initWithArray:person.phoneNumbers];
+            [phones addObject:contact.phoneNumbers.firstObject];
+            person.phoneNumbers = [self mergePhoneNumber:phones];
+            
+            NSMutableArray *emails = [[NSMutableArray alloc]initWithArray:person.emailAddresses];
+            [emails addObject:contact.emailAddresses.firstObject];
+            person.emailAddresses = [self mergeEmailNumber:emails];
+            
+        }
+    }
+    return [dict allValues];
+}
+- (NSArray *)mergePhoneNumber:(NSArray *)phones
+{
+    NSMutableDictionary *phoneDict = [[NSMutableDictionary alloc]init];
+    for (int i = 0; i < phones.count; ++i)
+    {
+        NSString *contactNumber = ((CNPhoneNumber *)(((CNLabeledValue *)phones[i]).value)).stringValue;
+        [phoneDict setValue:@"电话" forKey:contactNumber];
+    }
+    NSArray *arr = [phoneDict allKeys];
+    NSMutableArray *newPhones = [[NSMutableArray alloc]init];
+    for (int i = 0; i < arr.count; ++i)
+    {
+        CNPhoneNumber *number = [[CNPhoneNumber alloc]initWithStringValue:arr[i]];
+        CNLabeledValue *labeled = [[CNLabeledValue alloc]initWithLabel:[NSString stringWithFormat:@"电话%d",i+1] value:number];
+        [newPhones addObject:labeled];
+    }
+    return [NSArray arrayWithArray:newPhones];
+}
+//合并邮箱
+- (NSArray *)mergeEmailNumber:(NSArray *)emails
+{
+    NSMutableDictionary *emailDict = [[NSMutableDictionary alloc]init];
+    for (int i = 0; i < emails.count; ++i)
+    {
+        NSString *contactEmail = (NSString *)((CNLabeledValue *)emails[i]).value;
+        [emailDict setValue:@"邮箱" forKey:contactEmail];
+    }
+    NSArray *arr = [emailDict allKeys];
+    NSMutableArray *newEmails = [[NSMutableArray alloc]init];
+    for (int i = 0; i < arr.count; ++i)
+    {
+        CNLabeledValue *labeled = [[CNLabeledValue alloc]initWithLabel:[NSString stringWithFormat:@"邮箱%d",i+1] value:arr[i]];
+        [newEmails addObject:labeled];
+    }
+    return [NSArray arrayWithArray:newEmails];
+}
+
+
 - (CSContact *)contactWithName:(NSString *)name Phones:(NSArray *)phones emails:(NSArray *)emails andNote:(NSString *)note
 {
     CSContact *contact = [[CSContact alloc]init];
@@ -143,6 +317,7 @@
     contact.note = note;
     return contact;
 }
+
 - (void)cancel
 {
     [self.navigationController popViewControllerAnimated:YES];
@@ -155,12 +330,12 @@
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-
+    
     return 4;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-
+    
     if (section == 0)
     {
         return 1;
@@ -258,7 +433,7 @@
         };
         if (self.note)
         {
-            cell.textField.text = self.note;
+            cell.textView.text = self.note;
         }
         [cell configCell];
         return cell;
@@ -272,7 +447,7 @@
         return 80;
     }else if(indexPath.section == 3)
     {
-        return 50;
+        return 200;
     }else
     {
         return 40;
@@ -291,7 +466,7 @@
         return 0;
     }else
     {
-        return 30;
+        return 40;
     }
 }
 - (void)addContactInfo:(UIButton *)button
@@ -301,7 +476,7 @@
         NSString *phone = @"";
         [self.phones addObject:phone];
         [self.tableView reloadData];
-
+        
     }else
     {
         NSString *email = @"";

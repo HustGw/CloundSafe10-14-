@@ -5,6 +5,8 @@
 //  Created by 余笃 on 16/3/1.
 //  Copyright © 2016年 AlanZhang. All rights reserved.
 //
+#define DDHidden_TIME   3.0
+
 
 #import "LoginViewController.h"
 #import "MyTextField.h"
@@ -16,6 +18,10 @@
 #import <LocalAuthentication/LocalAuthentication.h>
 #import "OffLinePhoneBookController.h"
 #import "UINavigationController+FDFullscreenPopGesture.h"
+#import "CSMyInfoController.h"
+#import "CSEncrytionController.h"
+#import "DHGuidePageHUD.h"
+
 static CGFloat const kContainViewYNormal = 70.0;
 @interface LoginViewController ()<UITextFieldDelegate>
 
@@ -28,14 +34,17 @@ static CGFloat const kContainViewYNormal = 70.0;
 //@property (nonatomic, strong) MBProgressHUD    *HUD;
 @property (nonatomic, strong) MyTextField   *usernameField;
 @property (nonatomic, strong) MyTextField   *passwordField;
+@property (nonatomic, strong) UITextField   *CheckboxField;
 @property (nonatomic, strong) UIImageView   *leftUsernameView;
 @property (nonatomic, strong) UIImageView   *leftPasswdView;
 @property (nonatomic, strong) UIButton      *forgetPwdButton;
 @property (nonatomic, strong) UIButton      *loginButton;
+@property (nonatomic, strong) UIButton      *rememberButton;
 @property (nonatomic, strong) UIButton      *registerButton;
 @property (nonatomic, assign) BOOL          isKeyboardShowing;
 @property (nonatomic, assign) BOOL          isLogining;
 @property (nonatomic, strong) MBProgressHUD    *HUD;
+
 
 @end
 
@@ -58,6 +67,23 @@ static CGFloat const kContainViewYNormal = 70.0;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:BOOLFORKEY]) {
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:BOOLFORKEY];
+        // 静态引导页
+        [self setStaticGuidePage];
+        
+        // 动态引导页
+        // [self setDynamicGuidePage];
+        
+        // 视频引导页
+        // [self setVideoGuidePage];
+    }else{
+        NSLog(@"非首次启动");
+        NSArray *imageName = @[@"guideImage1.jpg"];
+        DHGuidePageHUD *guidePage = [[DHGuidePageHUD alloc] dh_initWithFrame:self.view.frame imageNameArray:imageName buttonIsHidden:NO];
+        [self.navigationController.view addSubview:guidePage];
+        
+    }
     
     self.fd_prefersNavigationBarHidden = YES;
     self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:20.0/255.0 green:205.0/255.0 blue:111.0/255.0 alpha:1.0];
@@ -86,7 +112,16 @@ static CGFloat const kContainViewYNormal = 70.0;
         }
         
     }
+    
 }
+
+
+- (void)setStaticGuidePage {
+        NSArray *imageNameArray = @[@"guideImage1.jpg",@"guideImage2.jpg",@"guideImage3.jpg",@"guideImage4.jpg",@"guideImage5.jpg"];
+        DHGuidePageHUD *guidePage = [[DHGuidePageHUD alloc] dh_initWithFrame:self.view.frame imageNameArray:imageNameArray buttonIsHidden:NO];
+        guidePage.slideInto = YES;
+        [self.navigationController.view addSubview:guidePage];
+    }
 //指纹登录
 - (void)loginWithTouchID
 {
@@ -157,7 +192,7 @@ static CGFloat const kContainViewYNormal = 70.0;
     
     CGSize screenSize = [[UIScreen mainScreen]bounds].size;
     CGSize maxSize= CGSizeMake(screenSize.width * 0.5, MAXFLOAT);
-    CGSize forgetSize = [self sizeWithText:@"忘记密码？" maxSize:maxSize fontSize:12];
+    CGSize forgetSize = [self sizeWithText:@"忘记密码？" maxSize:maxSize fontSize:14.0];
     [self.usernameField mas_updateConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.containView.mas_left).offset(50);
         make.top.equalTo(self.containView.mas_top).offset(162);
@@ -170,13 +205,19 @@ static CGFloat const kContainViewYNormal = 70.0;
         make.right.equalTo(self.containView.mas_right).offset(-50);
         make.height.equalTo(@30);
     }];
+//    [self.CheckboxField mas_updateConstraints:^(MASConstraintMaker *make) {
+//        make.left.equalTo(self.containView.mas_left).offset(75);
+//        make.top.equalTo(self.passwordField.mas_bottom).offset(20);
+//        make.right.equalTo(self.containView.mas_right).offset(-50);
+//        make.height.equalTo(@30);
+//    }];
     
     [self.forgetPwdButton mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.loginButton.mas_left);
-        make.top.equalTo(self.loginButton.mas_bottom).offset(10);
+        make.right.equalTo(self.loginButton.mas_right);
+        make.bottom.equalTo(self.Checkbox.mas_bottom).offset(2);
 //        make.left.equalTo(self.view).offset(10);
 //        make.bottom.equalTo(self.view).offset(-10);
-        make.size.mas_equalTo(CGSizeMake(forgetSize.width+1, forgetSize.height+1));
+        make.size.mas_equalTo(CGSizeMake(forgetSize.width+10, forgetSize.height+10));
     }];
     
     [self.loginButton mas_updateConstraints:^(MASConstraintMaker *make) {
@@ -185,16 +226,25 @@ static CGFloat const kContainViewYNormal = 70.0;
         make.top.equalTo(self.passwordField.mas_bottom).offset(60);
         make.height.equalTo(@45);
     }];
-    CGSize registerSize = [self sizeWithText:@"新用户注册" maxSize:CGSizeMake(100,100) fontSize:12];
+    
+    CGSize registerSize = [self sizeWithText:@"新用户注册" maxSize:CGSizeMake(100,100) fontSize:14.0];
+    CGSize rememberSize = [self sizeWithText:@"记住用户名" maxSize:CGSizeMake(100,100) fontSize:14.0];
     [self.registerButton mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.right.equalTo(self.loginButton.mas_right);
-        make.top.equalTo(self.loginButton.mas_bottom).offset(10);
+        make.left.equalTo(self.containView.mas_centerX).offset(-(int)registerSize.width/2);
+        make.top.equalTo(self.loginButton.mas_bottom).offset(20);
 //        make.right.equalTo(self.view).offset(-10);
 //        make.bottom.equalTo(self.view).offset(-10);
         make.height.mas_equalTo((int)registerSize.height+1);
         make.width.mas_equalTo((int)registerSize.width+1);
     }];
-    
+    [self.rememberButton mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.Checkbox.mas_right);
+        make.bottom.equalTo(self.Checkbox.mas_bottom).offset(-2);
+        //        make.right.equalTo(self.view).offset(-10);
+        //        make.bottom.equalTo(self.view).offset(-10);
+        make.height.mas_equalTo((int)rememberSize.height+1);
+        make.width.mas_equalTo((int)rememberSize.width+1);
+    }];
 }
 
 #pragma mark - UITextFeildDelegate
@@ -237,16 +287,25 @@ static CGFloat const kContainViewYNormal = 70.0;
     [self.view addSubview:self.containView];
 
     self.logoImageView = [[UIImageView alloc] init];
-    self.logoImageView.image = [UIImage imageNamed:@"home_logo"];
+    self.logoImageView.image = [UIImage imageNamed:@"login_logo"];
     [self.containView addSubview:self.logoImageView];
     
+    self.rememberButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.rememberButton setTitleColor:RGB(0x11cd6e, 1) forState:UIControlStateNormal];
+    self.rememberButton.titleLabel.font = [UIFont systemFontOfSize:14.0];
+    [self.rememberButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+    self.rememberButton.layer.borderWidth = 0;
+    [self.rememberButton setTitle:@"记住用户名" forState:UIControlStateNormal];
+    [self.rememberButton setTitleColor:[UIColor colorWithRed:0.4 green:0.4 blue:0.4 alpha:1] forState:UIControlStateNormal];
+    [self.containView addSubview:self.rememberButton];
+    
     self.registerButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.registerButton setTitleColor:RGB(0x11cd6e, 1) forState:UIControlStateNormal];
-    self.registerButton.titleLabel.font = [UIFont systemFontOfSize:12.0];
+    [self.registerButton setTitleColor:[UIColor colorWithRed:0.4 green:0.4 blue:0.4 alpha:1] forState:UIControlStateNormal];
+    self.registerButton.titleLabel.font = [UIFont systemFontOfSize:14.0];
     [self.registerButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
     self.registerButton.layer.borderWidth = 0;
     [self.registerButton setTitle:@"新用户注册" forState:UIControlStateNormal];
-    [self.forgetPwdButton setTitleColor:RGB(0x11cd6e, 1) forState:UIControlStateNormal];
+    [self.forgetPwdButton setTitleColor:[UIColor colorWithRed:0.4 green:0.4 blue:0.4 alpha:1] forState:UIControlStateNormal];
     [self.registerButton addTarget:self action:@selector(turnToRegisteViewController) forControlEvents:UIControlEventTouchUpInside];
     [self.containView addSubview:self.registerButton];
 
@@ -292,27 +351,60 @@ static CGFloat const kContainViewYNormal = 70.0;
     self.passwordField.leftViewMode = UITextFieldViewModeAlways;
     [self.containView addSubview:self.passwordField];
     
+    self.Checkbox =[[UIButton alloc]initWithFrame:CGRectZero];
+    _Checkbox.frame=CGRectMake(60, 265, 20, 20);
+    [_Checkbox setImage:[UIImage imageNamed:@"login_xuanzhekuang_nor"] forState:UIControlStateNormal];
+    [_Checkbox setImage:[UIImage imageNamed:@"login_xuanzhekuang_sel"] forState:UIControlStateSelected];
+    [_Checkbox addTarget:self action:@selector(CheckboxClick:) forControlEvents:(UIControlEventTouchUpInside)];
+    [_Checkbox setSelected:NO];
+    [self.containView addSubview:self.Checkbox];
+    
     self.forgetPwdButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.forgetPwdButton setTitle:@"忘记密码?" forState:UIControlStateNormal];
-    [self.forgetPwdButton setTitleColor:RGB(0x11cd6e, 1) forState:UIControlStateNormal];
-    self.forgetPwdButton.titleLabel.font = [UIFont systemFontOfSize:12.0];
+    [self.forgetPwdButton setTitleColor:[UIColor colorWithRed:0.4 green:0.40 blue:0.40 alpha:1] forState:UIControlStateNormal];
+    self.forgetPwdButton.titleLabel.font = [UIFont systemFontOfSize:14.0];
     [self.forgetPwdButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
     self.forgetPwdButton.layer.borderWidth = 0;
     [self.containView addSubview:self.forgetPwdButton];
     
+    self.UseforForget=[[UITextField alloc]init];
+    
     self.loginButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.loginButton setTitle:@"登录" forState:UIControlStateNormal];
-    self.loginButton.layer.cornerRadius = 5.0f;
+    //self.loginButton.layer.cornerRadius = 20.0f;
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.frame  = CGRectMake(0, 0,self.view.frame.size.width-100,45);
+    gradientLayer.cornerRadius = 20.0f;
+    gradientLayer.startPoint = CGPointMake(0, 0);
+    gradientLayer.endPoint = CGPointMake(1, 0);
+    gradientLayer.locations = @[@(0.1),@(1.0)];
+    [gradientLayer setColors:@[(id)[RGB(0x31C2B1,1) CGColor],(id)[RGB(0x1C27C,1) CGColor]]];
+    [self.loginButton.layer addSublayer:gradientLayer];
     self.loginButton.titleLabel.font = [UIFont systemFontOfSize:18.0];
     [self.loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [self.loginButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
-    [self.loginButton setBackgroundColor:CSCloundSafeColor];
     [self.containView addSubview:self.loginButton];
     [self.usernameField addTarget:self action:@selector(goPassword) forControlEvents:UIControlEventEditingDidEndOnExit];
     [self.passwordField addTarget:self action:@selector(login) forControlEvents:UIControlEventEditingDidEndOnExit];
     [self.forgetPwdButton addTarget:self action:@selector(goResetPwd) forControlEvents:UIControlEventTouchUpInside];
     [self.loginButton addTarget:self action:@selector(login) forControlEvents:UIControlEventTouchUpInside];
 
+}
+
+- (BOOL)CheckboxClick:(UIButton*)btn
+{
+    NSUserDefaults *ud=[NSUserDefaults standardUserDefaults];
+    btn.selected=!btn.selected;
+    if (btn.selected) {
+        _CheckboxBtn =YES;
+        
+//       [userDefaults setObject:@(YES) forKey:CHECK];
+    }else{
+        _CheckboxBtn =NO;
+//        [userDefaults setObject:@(NO) forKey:CHECK];
+    }
+     return _CheckboxBtn;
+    [ud setBool:_CheckboxBtn forKey:@"hello"];
 }
 
 - (void)getContactsAuthorization
@@ -343,6 +435,10 @@ static CGFloat const kContainViewYNormal = 70.0;
 #pragma mark - 登录
 -(void)login
 {
+    NSUserDefaults *ud=[NSUserDefaults standardUserDefaults];
+    [ud setBool:_CheckboxBtn forKey:@"hello"];
+    [userDefaults synchronize];
+    NSLog(@"Lisa.Login.CheckboxBtn=%d",_CheckboxBtn);
     if (([self.usernameField.text isEqualToString:@""] ||
         [self.usernameField.text length] != 11))
     {
@@ -369,12 +465,14 @@ static CGFloat const kContainViewYNormal = 70.0;
             if (isLogin.boolValue) {
                 NSString *password = [userDefaults objectForKey:@"userPassword"];
                 if ([password isEqualToString:self.passwordField.text]) {
+                    
                     //获取storyboard: 通过bundle根据storyboard的名字来获取我们的storyboard,
                     UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
                     //由storyboard根据myView的storyBoardID来获取我们要切换的视图
                     UIViewController *homeController = [story instantiateViewControllerWithIdentifier:@"HomeTabBar"];
                     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
                     appDelegate.window.rootViewController = homeController;
+                    
                 }else{
                     self.HUD.mode = MBProgressHUDModeCustomView;
                     self.HUD.label.text = @"用户名或密码错误！";
@@ -432,6 +530,7 @@ static CGFloat const kContainViewYNormal = 70.0;
                             UIViewController *homeController = [story instantiateViewControllerWithIdentifier:@"HomeTabBar"];
                             AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
                             appDelegate.window.rootViewController = homeController;
+                            
                             //登录成功创建用户目录
                             NSString *userDirectory = [NSString stringWithFormat:@"%@/%@",DocumentPath, self.usernameField.text];
                             if (![[NSFileManager defaultManager] fileExistsAtPath:userDirectory ])
@@ -513,7 +612,10 @@ static CGFloat const kContainViewYNormal = 70.0;
 }
 
 -(void)goResetPwd{
+    NSLog(@"Lisa the uesernameFieldLogin.text=%@",self.usernameField.text);
+    self.UseforForget.text=self.usernameField.text;
     ResetPasswordViewController *resetViewController = [[ResetPasswordViewController alloc]init];
+    resetViewController.UseforForget1=self.UseforForget;
     [self.navigationController pushViewController:resetViewController animated:YES];
 }
 #pragma mark - 返回上一界面

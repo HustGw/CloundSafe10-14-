@@ -10,4 +10,5 @@
 
 @interface CSEncrytionController : UIViewController
 + (UIImage *)thumbnailWithImageWithoutScale:(UIImage *)image size:(CGSize)asize;
+
 @end

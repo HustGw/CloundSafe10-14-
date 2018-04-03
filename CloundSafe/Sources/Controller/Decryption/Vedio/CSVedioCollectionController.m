@@ -23,7 +23,7 @@ static NSString * const reuseIdentifier = @"Cell";
     [super viewDidLoad];
     self.vedioArr = [self loadVedio];
     [self configCollectionView];
-    UIBarButtonItem *left = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"backIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(cancel)];
+    UIBarButtonItem *left = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"backIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(backtoRoot)];
     [left setTintColor:[UIColor whiteColor]];
     self.navigationItem.leftBarButtonItem = left;
     
@@ -32,9 +32,9 @@ static NSString * const reuseIdentifier = @"Cell";
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
 }
 
-- (void)cancel
+- (void)backtoRoot
 {
-    [self.navigationController popViewControllerAnimated:YES];
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 #pragma mark - fulldisplayDelegate
 - (void)passimagePath:(NSString *)path
@@ -338,11 +338,11 @@ static NSString * const reuseIdentifier = @"Cell";
     self.navigationItem.title = @"选择视频";
     
     _imageFormatName = FICDPhotoSquareImage32BitBGRAFormatName;
-    
+    /*
     UIView *bottomToolBar = [[UIView alloc] initWithFrame:CGRectMake(0, kScreenHeight - 50, kScreenWidth, 50)];
     CGFloat rgb = 253 / 255.0;
     bottomToolBar.backgroundColor = [UIColor colorWithRed:rgb green:rgb blue:rgb alpha:1.0];
-    self.decrytionBtn = [[UIButton alloc]initWithFrame:CGRectMake(kScreenWidth - 44 - 12, 3, 44, 44)];
+    self.decrytionBtn = [[UIButton alloc]initWithFrame:CGRectMake(12, 3, 44, 44)];
     [self.view addSubview:bottomToolBar];
 //    UIColor *oKButtonTitleColorNormal   = [UIColor colorWithRed:(83/255.0) green:(179/255.0) blue:(17/255.0) alpha:1.0];
 //    UIColor *oKButtonTitleColorDisabled = [UIColor colorWithRed:(83/255.0) green:(179/255.0) blue:(17/255.0) alpha:0.5];
@@ -368,7 +368,7 @@ static NSString * const reuseIdentifier = @"Cell";
     [bottomToolBar addSubview:self.shareBtn];
     [self.shareBtn mas_updateConstraints:^(MASConstraintMaker *make) {
         make.centerY.equalTo(bottomToolBar);
-        make.left.equalTo(bottomToolBar).offset(10);
+        make.left.equalTo(bottomToolBar).offset(kScreenWidth-54);
         make.size.mas_offset(CGSizeMake(44, 44));
     }];
     [self.shareBtn setTitle:@"共享" forState:UIControlStateNormal];
@@ -377,6 +377,30 @@ static NSString * const reuseIdentifier = @"Cell";
     
     [bottomToolBar addSubview:divide];
     [bottomToolBar addSubview:self.decrytionBtn];
+     */
+    self.decrytionBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height-50, self.view.frame.size.width*0.60, 50)];
+    self.decrytionBtn.enabled = NO;
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.frame = CGRectMake(0, 0, self.view.frame.size.width*0.68, 50);
+    gradientLayer.endPoint = CGPointMake(1, 0);
+    gradientLayer.locations = @[@(0.1),@(1.0)];
+    [gradientLayer setColors:@[(id)[RGB(0x31C2B1,1) CGColor],(id)[RGB(0x1C27C,1) CGColor]]];
+    [self.decrytionBtn.layer addSublayer:gradientLayer];
+    self.decrytionBtn.titleLabel.font = [UIFont systemFontOfSize:16.0];
+    [self.decrytionBtn setTitle:@"解密" forState:UIControlStateNormal];
+    [self.decrytionBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.decrytionBtn addTarget:self action:@selector(decryptionVedio:) forControlEvents:UIControlEventTouchUpInside];
+    [self.decrytionBtn setTitle:@"解密" forState:UIControlStateDisabled];
+    [self.view addSubview:self.decrytionBtn];
+    self.shareBtn = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width*0.6, self.view.frame.size.height-50, self.view.frame.size.width*0.4, 50)];
+    self.shareBtn.enabled = NO;
+    [self.shareBtn setTitle:@"共享" forState:UIControlStateNormal];
+    [self.shareBtn setTitle:@"共享" forState:UIControlStateDisabled];
+    self.shareBtn.titleLabel.font = [UIFont systemFontOfSize:16.0];
+    self.shareBtn.backgroundColor = [UIColor whiteColor];
+    [self.shareBtn setTitleColor:RGB(0x31c27c, 1) forState:UIControlStateNormal];
+    [self.shareBtn addTarget:self action:@selector(shareContent:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.shareBtn];
 }
 - (NSArray *)loadVedio
 {

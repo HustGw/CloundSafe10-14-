@@ -13,11 +13,18 @@
 #import "CSContactInoContorller.h"
 #import "CSAddContactController.h"
 #import "ContactBL.h"
+#import "BMChineseSort.h"
+
 @interface CSPhoneBookController ()<UISearchResultsUpdating>
 @property (nonatomic, strong) NSArray *contacts;
+//排序后的出现过的拼音首字母数组
+@property(nonatomic,strong)NSMutableArray *indexArray;
+//排序好的结果数组
+@property(nonatomic,strong)NSMutableArray *letterResultArr;
 @property (nonatomic, strong) NSMutableArray *searchResults;
 @property (nonatomic, strong) UISearchController *searchController;
 @property (nonatomic, strong) CSSearchResultsController *searchResultController;
+@property(nonatomic,strong) NSMutableArray *contactArr;
 
 @end
 
@@ -52,8 +59,10 @@
     
     [self getContact];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refleshArrayOfNewContact) name:@"contactUpdated" object:nil];
+    self.indexArray = [BMChineseSort IndexWithArray:_contacts Key:@"name"];
+    self.letterResultArr = [BMChineseSort sortObjectArray:_contacts Key:@"name"];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refleshArrayOfNewContact) name:@"contactUpdated" object:nil];
 }
 
 - (UILabel *)contactAuthorizationLabel
@@ -78,6 +87,8 @@
 {
     ContactBL *contactBL = [[ContactBL alloc]init];
     self.contacts = [self removeRepeatedContact:[contactBL findAll]];
+    self.indexArray = [BMChineseSort IndexWithArray:_contacts Key:@"name"];
+    self.letterResultArr = [BMChineseSort sortObjectArray:_contacts Key:@"name"];
     [self.tableView reloadData];
 }
 //添加联系人
@@ -103,7 +114,25 @@
         [self.searchController.searchBar removeFromSuperview];
     }
 }
-
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    return [self.indexArray objectAtIndex:section];
+}
+//section行数
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    return [self.indexArray count];
+}
+//每组section个数
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    return [[self.letterResultArr objectAtIndex:section] count];
+}
+//section右侧index数组
+-(NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView{
+    return self.indexArray;
+}
+//点击右侧索引表项时调用 索引与section的对应关系
+- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index{
+    return index;
+}
 - (void)getContact
 {
     CNAuthorizationStatus status = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
@@ -111,10 +140,12 @@
     {//有权限时
         self.contactAuthorizationLabel.hidden = YES;
         NSString *userName = [userDefaults valueForKey:@"userName"];
+        NSLog(@"Lisa.通讯录.username=%@",userName);
         NSString *dbPath = [NSString stringWithFormat:@"%@/%@/%@",DocumentPath,userName,DBFILE_NAME];
+        NSLog(@"Lisa.PhoneBook.dbPath=%@",dbPath);
         if (![[NSFileManager defaultManager] fileExistsAtPath:dbPath])//首次启动
         {
-
+            
             if ([CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts] == CNAuthorizationStatusAuthorized)
             {//有权限访问
                 NSError *error = nil;
@@ -125,13 +156,13 @@
                 CNContactFetchRequest *fetchRequest = [[CNContactFetchRequest alloc] initWithKeysToFetch:keysToFetch];
                 //遍历查询
                 //创建CNContactStore对象,用与获取和保存通讯录信息
-                NSMutableArray *contactArr = [[NSMutableArray alloc]init];
+                self.contactArr = [[NSMutableArray alloc]init];
                 CNContactStore *contactStore = [[CNContactStore alloc] init];
                 [contactStore enumerateContactsWithFetchRequest:fetchRequest error:&error usingBlock:^(CNContact * _Nonnull contact, BOOL * _Nonnull stop) {
                     if (!error) {
-                        
                         CSContact *person = [[CSContact alloc]init];
                         person.familyName = contact.familyName;
+                        NSLog(@"Lisa.通讯录首次.familyname=%@",person.familyName);
                         person.givenName = contact.givenName;
                         person.phoneNumbers = contact.phoneNumbers;
                         //person.organizationName = contact.organizationName;
@@ -141,13 +172,13 @@
                         person.note = contact.note;
                         person.name = [NSString stringWithFormat:@"%@%@",person.familyName, person.givenName];
                         //person.imageData = contact.imageData;
-                        [contactArr addObject:person];
+                        [self.contactArr addObject:person];
                         
                     }else{
                         NSLog(@"error:%@", error.localizedDescription);
                     }
                 }];
-                self.contacts = [[NSArray alloc]initWithArray:contactArr];
+                self.contacts = [[NSArray alloc]initWithArray:self.contactArr];
                 //创建数据库，存储联系人
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
                     ContactBL *contactBL = [[ContactBL alloc]init];
@@ -157,34 +188,45 @@
                         contact.ID = i+1;
                         [contactBL saveContact:contact];
                     }
-
+                    
                 });
-
+                
                 
             }else
             {//无权限访问
                 NSLog(@"拒绝访问通讯录");
             }
-
+            
             
         }
         else //非首次启动,从数据库加载数据
         {
             ContactBL *contactBL = [[ContactBL alloc]init];
-            
             self.contacts = [self removeRepeatedContact:[contactBL findAll]];
-
         }
-
     }
     else
     {
         self.contactAuthorizationLabel.hidden = NO;
         NSLog(@"您未开启通讯录权限,请前往设置中心开启");
-        
     }
-
+    
 }
+
+//- (NSString *)firstCharactor:(NSString *)aString
+//{
+//    //转成了可变字符串
+//    NSMutableString *str = [NSMutableString stringWithString:aString];
+//    //先转换为带声调的拼音
+//    CFStringTransform((CFMutableStringRef)str,NULL, kCFStringTransformMandarinLatin,NO);
+//    //再转换为不带声调的拼音
+//    CFStringTransform((CFMutableStringRef)str,NULL, kCFStringTransformStripDiacritics,NO);
+//    //转化为大写拼音
+//    NSString *pinYin = [str capitalizedString];
+//    //获取并返回首字母
+//    return [pinYin substringToIndex:1];
+//    NSLog(@"Lisa.aString.pinYin=%@",pinYin);
+//}
 //去掉从数据返回的重复记录
 - (NSArray *)removeRepeatedContact:(NSArray *)soucres
 {
@@ -259,21 +301,20 @@
 
 #pragma mark - Table view data source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+//- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+//{
+//    return 1;
+//}
 
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-
-    if (self.contacts)
-    {
-        return self.contacts.count;
-    }else
-    {
-        return 0;
-    }
-}
+//- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+//    if (self.contacts)
+//    {
+//        return self.contacts.count;
+//    }else
+//    {
+//        return 0;
+//    }
+//}
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -283,7 +324,7 @@
     {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"contactCell"];
     }
-    CSContact *person = self.contacts[indexPath.row];
+    CSContact *person = [[self.letterResultArr objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
     cell.textLabel.text = person.name;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
@@ -291,8 +332,8 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    CSContactInoContorller *info = [[CSContactInoContorller alloc]initWithContact:self.contacts[indexPath.row]];
-
+    CSContactInoContorller *info = [[CSContactInoContorller alloc]initWithContact:[[self.letterResultArr objectAtIndex:indexPath.section] objectAtIndex:indexPath.row]];
+    
     [self.navigationController pushViewController:info animated:YES];
 }
 

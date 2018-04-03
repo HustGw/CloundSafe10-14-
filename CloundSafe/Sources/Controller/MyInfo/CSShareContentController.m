@@ -9,11 +9,15 @@
 #import "CSShareContentController.h"
 #import "CSPictureCollectionController.h"
 #import "CSVedioCollectionController.h"
+#import "CSUseguidesController.h"
+#import "CSUseguide3Controller.h"
 @implementation CSShareContentController
 
 -(void)viewDidLoad
 {
     [super viewDidLoad];
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectNull style:UITableViewStylePlain];
+    self.tableView.sectionFooterHeight=0;
     self.navigationItem.title = @"密文类型";
     UIBarButtonItem *left = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"backIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(back)];
     [left setTintColor:[UIColor whiteColor]];
@@ -31,16 +35,20 @@
     {
         CSPictureCollectionController *vc = [[CSPictureCollectionController alloc]init];
         [self.navigationController pushViewController:vc animated:YES];
+    }
+    else if ( indexPath.row ==1 )
+    {   CSVedioCollectionController *vc = [[CSVedioCollectionController alloc]init];
+        [self.navigationController pushViewController:vc animated:YES];
     }else
     {
-        CSVedioCollectionController *vc = [[CSVedioCollectionController alloc]init];
+        CSUseguide3Controller *vc = [[CSUseguide3Controller alloc]init];
         [self.navigationController pushViewController:vc animated:YES];
     }
 }
 #pragma mark - tableview delegate
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 2;
+    return 3;
 }
 - (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -55,10 +63,14 @@
     {
         cell.imageView.image = [UIImage imageNamed:@"picContent"];
         cell.textLabel.text = @"图片密文";
-    }else
+    }else if (indexPath.row == 1)
     {
         cell.imageView.image = [UIImage imageNamed:@"vedioContent"];
         cell.textLabel.text = @"视频密文";
+    }else
+    {
+        cell.imageView.image = [UIImage imageNamed:@"useguides"];
+        cell.textLabel.text = @"使用说明";
     }
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     return cell;

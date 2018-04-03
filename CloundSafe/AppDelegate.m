@@ -38,6 +38,9 @@
     
     [mutableImageFormats addObject:squareImageFormat32BitBGR];
     
+    
+    
+    
     // ...16-bit BGR
     FICImageFormat *squareImageFormat16BitBGR = [FICImageFormat formatWithName:FICDPhotoSquareImage16BitBGRFormatName family:FICDPhotoImageFormatFamily imageSize:FICDPhotoSquareImageSize style:FICImageFormatStyle16BitBGR
                                                                   maximumCount:squareImageFormatMaximumCount devices:squareImageFormatDevices];
@@ -125,11 +128,69 @@
 #else
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(nonnull NSDictionary<NSString *,id> *)options
 {
-    NSLog(@"%@",url);
+    if (self.window) {
+        if (url) {
+            NSString *urlStr = [url absoluteString];
+            NSLog(@"%@",urlStr);
+            NSArray *arr=[urlStr componentsSeparatedByString:@"private"];
+            NSLog(@"%@",arr);
+            NSString *Str=arr[1];
+            NSLog(@"Str=%@",Str);
+            NSString *fileNameStr = [url lastPathComponent];
+            
+            NSString *Doc = [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/localFile"] stringByAppendingPathComponent:fileNameStr];
+            NSData *data = [NSData dataWithContentsOfURL:url];
+            [data writeToFile:Doc atomically:YES];
+            NSLog(@"Lisa.Doc=%@",Doc);
+            
+            NSString *userName = [userDefaults valueForKey:@"userName"];
+            NSString *photosPath = [NSString stringWithFormat:@"%@/%@",DocumentPath, userName];
+            NSFileManager *fileManage = [NSFileManager defaultManager];
+            NSLog(@"Lisa.application.photopath=%@",photosPath);
+            
+            self.dateOfEnterbackground = [NSDate date];
+            NSDate *currentDate = [NSDate date];
+            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+            [dateFormatter setDateFormat:@"YYYY-MM-dd-HH-mm-ss"];
+            NSString *currentDateStr = [dateFormatter stringFromDate:currentDate];
+            
+            NSString *myDirectory = [photosPath stringByAppendingPathComponent:@"imtp_"];
+            NSString *myjointDirectory = [myDirectory stringByAppendingString:currentDateStr];
+            NSLog(@"Lisa.myjointDirectory=%@",myjointDirectory);
+            NSString *movePath = [myjointDirectory stringByAppendingPathComponent:fileNameStr];
 
-    
+            
+            NSLog(@"Lisa.movePath=%@",movePath);
+
+
+            BOOL ok = [fileManage createDirectoryAtPath:myjointDirectory withIntermediateDirectories:YES attributes:nil error:nil];
+            if (ok) {
+                NSLog(@"文件夹创建成功");
+            } else {
+                NSLog(@"文件夹创建失败");
+            }
+            
+            BOOL result = [fileManage fileExistsAtPath:Doc];
+            NSLog(@"这个文件已经存在：%@",result?@"是的":@"不存在");
+            BOOL result01 = [fileManage fileExistsAtPath:urlStr];
+            NSLog(@"这个文件已经存在：%@",result01?@"是的":@"不存在");
+            BOOL result02 = [fileManage fileExistsAtPath:Str];
+            NSLog(@"这个文件已经存在：%@",result02?@"是的":@"不存在");
+            
+            BOOL isMovePath = [fileManage moveItemAtPath:Str toPath:movePath error:nil];
+             NSLog(@"Lisa.Doc=%@",Doc);
+           
+            
+            if (isMovePath) {
+                NSLog(@"文件移动成功");
+            }
+            else {
+                NSLog(@"文件移动失败");
+            }
+
+        }
+    }
     return YES;
-    
 }
 #endif
 
