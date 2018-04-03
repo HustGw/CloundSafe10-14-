@@ -54,6 +54,7 @@ static NSString * const reuseIdentifier = @"Cell";
     [centerView addSubview:titleLabel];
     self.navigationItem.titleView = centerView;
     self.plistName = @"Asset";
+    NSString *test = @"this is a test";
 //    _myAlbum = [[MyAlbum alloc]initWithFolderName:@"云加密"];
     [self createFolder];
     [self setPlistName];
