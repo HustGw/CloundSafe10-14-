@@ -39,6 +39,7 @@ static BOOL RemberUsername;
     [self initTableView];
 //    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:20.0/255.0 green:205.0/255.0 blue:111.0/255.0 alpha:1.0];
 //    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
+    self.navigationController.navigationBarHidden = YES;
 }
 - (void)initTableView
 {
