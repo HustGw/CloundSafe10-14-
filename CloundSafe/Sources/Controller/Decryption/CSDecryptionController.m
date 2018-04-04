@@ -52,7 +52,7 @@
     self.view.backgroundColor = [UIColor clearColor];
    // self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"decrytion_background"]];
 //    self.view.transform=CGAffineTransformMakeScale(1.2, 1.2);
-    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:20.0/255.0 green:205.0/255.0 blue:111.0/255.0 alpha:1.0];
+    self.navigationController.navigationBar.barTintColor = RGB(0x31C2B1,1);
 //    self.imageArr = [CSDecryptionController loadPhoto];
     
 }
