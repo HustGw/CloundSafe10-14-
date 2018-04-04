@@ -52,7 +52,7 @@ static NSString * const reuseIdentifier = @"Cell";
     titleLabel.textColor = [UIColor whiteColor];
     [centerView.layer addSublayer:navigationBarLayer];
     [centerView addSubview:titleLabel];
-    self.navigationItem.titleView = centerView;
+   // self.navigationItem.titleView = centerView;
     self.plistName = @"Asset";
 //    _myAlbum = [[MyAlbum alloc]initWithFolderName:@"云加密"];
     [self createFolder];
