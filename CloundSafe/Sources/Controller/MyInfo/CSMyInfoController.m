@@ -20,18 +20,22 @@
 #import "CSMyEncryptionController.h"
 #import "CSGestureResultViewController.h"
 #import "CSGestureViewController.h"
+#import "AFNetworking.h"
 
 static BOOL RemberUsername;
-@interface CSMyInfoController ()<UITableViewDelegate, UITableViewDataSource,MWPhotoBrowserDelegate ,UIAlertViewDelegate>
+@interface CSMyInfoController ()<UITableViewDelegate, UITableViewDataSource,MWPhotoBrowserDelegate ,UIAlertViewDelegate,UIGestureRecognizerDelegate,UIImagePickerControllerDelegate,UINavigationBarDelegate>
+{
+    NSUInteger *sourceType;
+}
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSArray *photos;
 @property (nonatomic, strong) NSMutableArray *selections;
+@property (nonatomic, strong) UIImageView *my_photobackground;
 
 @end
 @implementation CSMyInfoController
 - (void)viewDidLoad
 {
-    
     [super viewDidLoad];
     NSUserDefaults *userDefaultLisa = [NSUserDefaults standardUserDefaults];
     NSNumber *Hello=[userDefaultLisa valueForKey:@"hello"];
@@ -39,10 +43,33 @@ static BOOL RemberUsername;
     [self initTableView];
 //    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:20.0/255.0 green:205.0/255.0 blue:111.0/255.0 alpha:1.0];
 //    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
-    self.navigationController.navigationBarHidden = YES;
+    self.navigationController.navigationBarHidden =YES;
 }
 - (void)initTableView
 {
+    UIImage *background = [[UIImage alloc]init];
+    background = [UIImage imageNamed:@"my_background"];
+    UIImageView *backgroundView =[[UIImageView alloc]initWithImage:background] ;
+    backgroundView.frame = CGRectMake(0, 0, ([UIScreen mainScreen].bounds.size.width), 160);
+    [self.view addSubview:backgroundView];
+    UIImage *my_photo1 = [UIImage imageNamed:@"my_photo"];
+    self.my_photobackground = [[UIImageView alloc]init];
+    NSString *fullPath = [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] stringByAppendingPathComponent:@"currentImage.png"];
+    UIImage *savedImage = [[UIImage alloc] initWithContentsOfFile:fullPath];
+    if (savedImage == nil) {
+        [self.my_photobackground setImage:my_photo1];
+    }else{
+        [self.my_photobackground setImage:savedImage];
+    }
+    self.my_photobackground.frame = CGRectMake(30, 30, 100, 100);
+    self.my_photobackground.layer.cornerRadius=
+    self.my_photobackground.frame.size.width/2;
+    self.my_photobackground.layer.masksToBounds = YES;
+    self.my_photobackground.layer.borderWidth = 1.5f;
+    self.my_photobackground.layer.borderColor = [UIColor whiteColor].CGColor;
+    [self.view addSubview:self.my_photobackground];
+    UITapGestureRecognizer *top = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(touchesBegan:)];
+    [self.my_photobackground addGestureRecognizer:top];
     [self.view addSubview:[[UIView alloc]initWithFrame:CGRectZero]];
     self.tableView = [[UITableView alloc]initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     self.tableView.estimatedSectionHeaderHeight = 0;
@@ -50,189 +77,323 @@ static BOOL RemberUsername;
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
     [self.tableView mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.view).offset(64);
+        make.top.equalTo(self.view).offset(160);
         make.right.left.equalTo(self.view);
         make.bottom.equalTo(self.view).offset(-49);
     }];
-    self.tableView.backgroundColor = [UIColor colorWithRed:239.0/255.0 green:242.0/255.0 blue:241.0/255.0 alpha:1.0];
-    
+//    self.tableView.backgroundColor = [UIColor colorWithRed:239.0/255.0 green:242.0/255.0 blue:241.0/255.0 alpha:1.0];
+}
+
+-(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{        //选取照片上传
+    UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:@"选择" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    UIApplication *action = [UIAlertAction actionWithTitle:@"拍照" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+        [self addAction:action];
+    }];
+    UIApplication *action01 = [UIAlertAction actionWithTitle:@"从相册选择" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        NSLog(@"two");
+        [self addAction01:action01];
+    }];
+    UIApplication *action02 = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        NSLog(@"cancle");
+    }];
+    [actionSheet addAction:action];
+    [actionSheet addAction:action01];
+    [actionSheet addAction:action02];
+    [self presentViewController:actionSheet animated:YES completion:nil];
     
 }
+
+- (void)addAction:(UIAlertAction *)action
+{
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        sourceType = UIImagePickerControllerSourceTypeCamera;
+    }else
+        {
+        sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+        }
+    UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
+    
+    imagePickerController.delegate = self;
+    
+    imagePickerController.allowsEditing = YES;
+    
+    imagePickerController.sourceType = sourceType;
+    
+    [self presentViewController:imagePickerController animated:YES completion:^{}];
+}
+
+-(void)addAction01:(UIAlertAction *)action
+{
+    sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
+    
+    imagePickerController.delegate = self;
+    
+    imagePickerController.allowsEditing = YES;
+    
+    imagePickerController.sourceType = sourceType;
+    
+    [self presentViewController:imagePickerController animated:YES completion:^{}];
+}
+
+    //    // 图片选择结束之后，走这个方法，字典存放所有图片信息
+#pragma mark - image picker delegte
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    [picker dismissViewControllerAnimated:YES completion:^{}];
+    
+    UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
+    
+        //01.21 应该在提交成功后再保存到沙盒，下次进来直接去沙盒路径取
+    
+        // 保存图片至本地，方法见下文
+    [self saveImage:image withName:@"currentImage.png"];
+        //读取路径进行上传
+    NSString *fullPath = [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] stringByAppendingPathComponent:@"currentImage.png"];
+    UIImage *savedImage = [[UIImage alloc] initWithContentsOfFile:fullPath];
+    
+    
+    [self.my_photobackground setImage:savedImage];//图片赋值显示
+    
+        //进到次方法时 调 UploadImage 方法上传服务端
+        //    NSDictionary *dic = @{@"image":fullPath};
+        //    [self UploadImage:dic];
+}
+
+#pragma mark - 保存图片至沙盒（应该是提交后再保存到沙盒,下次直接去沙盒取）
+- (void) saveImage:(UIImage *)currentImage withName:(NSString *)imageName
+{
+    
+    NSData *imageData = UIImageJPEGRepresentation(currentImage, 0.5);
+        // 获取沙盒目录
+    
+    NSString *fullPath = [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] stringByAppendingPathComponent:imageName];
+        // 将图片写入文件
+    
+    [imageData writeToFile:fullPath atomically:NO];
+}
+
+
+    //图频上传
+
+-(void)UploadImage:(NSDictionary *)dic
+{
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+        //网址
+    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/plain"];
+    
+    [manager POST:@"http://112.74.67.161:8080/foodOrder/service/file/upload.do" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+            //01.21 测试
+        NSString * imgpath = [NSString stringWithFormat:@"%@",dic[@"image"]];
+        
+        UIImage *image = [UIImage imageWithContentsOfFile:imgpath];
+        NSData *data = UIImageJPEGRepresentation(image,0.7);
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        formatter.dateFormat = @"yyyyMMddHHmmss";
+        NSString *str = [formatter stringFromDate:[NSDate date]];
+        NSString *fileName = [NSString stringWithFormat:@"%@.jpg", str];
+        
+        [formData appendPartWithFileData:data name:@"Filedata" fileName:fileName mimeType:@"image/jpg"];
+        
+    } success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+            //成功 后处理。
+        NSLog(@"Success: %@", responseObject);
+        NSString * str = [responseObject objectForKey:@"fileId"];
+        if (str != nil) {
+                //            [self.delegate uploadImgFinish:str];
+        }
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            //失败
+        NSLog(@"Error: %@", error);
+    }];
+}
+
 #pragma mark - tableView delegate
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
-{
-    if (section == 0) {
-        return 0;
-    }else{
-        return 1;
-    }
-}
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    return 10;
-}
-//- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+//- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 //{
-//    if (section == 1)
-//    {
-//        UIView *view = [[UIView alloc]init];
-//        view.backgroundColor = [UIColor clearColor];
-//        return view;
+//    if (section == 0) {
+//        return 0;
+//    }else{
+//        return 1;
 //    }
-//    return nil;
 //}
-
-//- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-//{
-//    UIView *view = [[UIView alloc]init];
-//    view.backgroundColor = [UIColor clearColor];
-//    return view;
-//}
-
-
-
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (section == 0)
-    {
-        return 5;
-    }else
-    {
-        return 3;
-    }
+    if(section == 0)
+        {
+        return 4;
+        }else
+            if(section == 1)
+                {
+                return 3;
+                }else
+                    {
+                    return 1;
+                    }
 }
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 2;
+    return 3;
 }
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell *cell = [[UITableViewCell alloc]init];
+{ UITableViewCell *cell = [[UITableViewCell alloc]init];
     
     cell.textLabel.font = [UIFont systemFontOfSize:14];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     if (indexPath.section == 0)
-    {
-        if (indexPath.row == 0)
         {
+        if (indexPath.row == 0)
+            {
             cell.textLabel.text = @"私密联系人";
             cell.imageView.image = [UIImage imageNamed:@"phonebook"];
-        }
+            }
         else if (indexPath.row == 1)
-        {
+            {
             cell.textLabel.text = @"iTunes的导入";
             cell.imageView.image = [UIImage imageNamed:@"export"];
-        }else if (indexPath.row == 2)
-        {
-            cell.textLabel.text = @"最近解密";
-            cell.imageView.image = [UIImage imageNamed:@"latest"];
-        }else if (indexPath.row == 3)
-        {
-            cell.textLabel.text = @"共享密文";
-            cell.imageView.image = [UIImage imageNamed:@"share"];
-        }/*else if (indexPath.row == 4)
-        {
-            cell.textLabel.text = @"我的加密";
-            cell.imageView.image = [UIImage imageNamed:@"share"];
-        }*/else
-        {
-            cell.textLabel.text = @"修改密码";
-            cell.imageView.image = [UIImage imageNamed:@"pen"];
-        }
+            }else if (indexPath.row == 2)
+                {
+                cell.textLabel.text = @"最近解密";
+                cell.imageView.image = [UIImage imageNamed:@"latest"];
+                }else if (indexPath.row == 3)
+                    {
+                    cell.textLabel.text = @"共享密文";
+                    cell.imageView.image = [UIImage imageNamed:@"share"];
+                    }/*else if (indexPath.row == 4)
+                      {
+                      cell.textLabel.text = @"我的加密";
+                      cell.imageView.image = [UIImage imageNamed:@"share"];
+                      }*/
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    }else if (indexPath.section == 1)
-    {
-        if (indexPath.row == 0)
-        {
-            cell.textLabel.text = @"关于我们";
-            cell.imageView.image = [UIImage imageNamed:@"aboutus"];
-
-        }else if (indexPath.row == 1)
-        {
-            cell.textLabel.text = @"使用指南";
-            cell.imageView.image = [UIImage imageNamed:@"useguides"];
-        }else
-        {
-            cell.textLabel.text = @"退出登陆";
-            cell.imageView.image = [UIImage imageNamed:@"logout"];
-        }
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    }else
-    {
-        UILabel *logout = [[UILabel alloc]init];
-        [cell addSubview:logout];
-        logout.text = @"退出登录";
-        logout.font = [UIFont systemFontOfSize:14];
-        [logout mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.center.equalTo(cell);
-            make.size.mas_offset(CGSizeMake(60, 30));
-        }];
-    }
+        }else if (indexPath.section == 1)
+            {
+            if (indexPath.row == 0)
+                {
+                cell.textLabel.text = @"关于我们";
+                cell.imageView.image = [UIImage imageNamed:@"aboutus"];
+                
+                }else if (indexPath.row == 1)
+                    {
+                    cell.textLabel.text = @"使用指南";
+                    cell.imageView.image = [UIImage imageNamed:@"useguides"];
+                    }else
+                        {
+                        cell.textLabel.text = @"修改密码";
+                        cell.imageView.image = [UIImage imageNamed:@"pen"];
+                        }
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            }else
+                {
+                UILabel *logout = [[UILabel alloc]init];
+                [cell addSubview:logout];
+                logout.text = @"退出登录";
+                logout.font = [UIFont systemFontOfSize:14];
+                [logout mas_updateConstraints:^(MASConstraintMaker *make) {
+                    make.center.equalTo(cell);
+                    make.size.mas_offset(CGSizeMake(60, 30));
+                }];
+                }
     cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0);
     return cell;
 }
+
+-(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 10;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 0;
+}
+
+-(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+{
+    UIView *view = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 10)];
+    view.backgroundColor = [UIColor clearColor];
+    return view;
+}
+
+-(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UIView *view = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 0)];
+//    view.backgroundColor = [UIColor greenColor];
+    return view;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 50;
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+   
     if (indexPath.section == 0)
-    {
-        if (indexPath.row == 0)
         {
+        if (indexPath.row == 0)
+            {
             CSPhoneBookController *vc = [[CSPhoneBookController alloc]init];
             [self.navigationController pushViewController:vc animated:YES];
-        }
+            }
         else if (indexPath.row == 1)//我的导入
-        {
+            {
             CSImportContentController *exportController = [[CSImportContentController alloc]init];
             [self.navigationController pushViewController:exportController animated:YES];
-        }else if (indexPath.row == 2)//最近解密
-        {
-//            [self lastestDecryption];
-            CSLastDecryptionViewController *vc = [[CSLastDecryptionViewController alloc] init];
-            [self.navigationController pushViewController:vc animated:YES];
-        }else if (indexPath.row == 3)//共享密文
-        {
-            CSShareContentController *shareContent = [[CSShareContentController alloc]init];
-            [self.navigationController pushViewController:shareContent animated:YES];
-        }/*else if (indexPath.row == 4)//我的加密
-        {
-//           CSMyEncryptionController *myEncryption = [[CSMyEncryptionController alloc]init];
-//           [self.navigationController pushViewController:myEncryption animated:YES];
-            NSString *userName = [userDefaults valueForKey:@"userName"];
-            if([[NSUserDefaults standardUserDefaults]objectForKey:userName]==nil){
-                CSGestureViewController *vc = [[CSGestureViewController alloc]init];
+            }else if (indexPath.row == 2)//最近解密
+                {
+                    //            [self lastestDecryption];
+                CSLastDecryptionViewController *vc = [[CSLastDecryptionViewController alloc] init];
                 [self.navigationController pushViewController:vc animated:YES];
-            }
-            else{
-            CSGestureResultViewController *myEncryption = [[CSGestureResultViewController alloc]init];
-            [self.navigationController pushViewController:myEncryption animated:YES];
-            }
-        }*/else//修改密码
-        {
-            ChangePasswordViewController *resetPassword = [[ChangePasswordViewController alloc]init];
-            [self.navigationController pushViewController:resetPassword animated:YES];
-        }
-    }else
-    {
-        if (indexPath.row == 0)//关于我们
-        {
-            CSAboutusController *aboutus = [[CSAboutusController alloc]init];
-            [self.navigationController pushViewController:aboutus animated:YES];
-
-        }else if(indexPath.row == 1)
-        {
-            CSUseguideAllViewController *useguides = [[CSUseguideAllViewController alloc]init];
-            [self.navigationController pushViewController:useguides animated:YES];
-        }else
-        {
-            UIAlertView *alertView = [[UIAlertView alloc]
-                                      initWithTitle:@"提示"
-                                      message:@"确定退出"
-                                      delegate:self
-                                      cancelButtonTitle:@"否"
-                                      otherButtonTitles:@"是", nil];
-            [alertView show];
-            
-        }
+                }else if (indexPath.row == 3)//共享密文
+                    {
+                    CSShareContentController *shareContent = [[CSShareContentController alloc]init];
+                    [self.navigationController pushViewController:shareContent animated:YES];
+                    }/*else if (indexPath.row == 4)//我的加密
+                      {
+                      //           CSMyEncryptionController *myEncryption = [[CSMyEncryptionController alloc]init];
+                      //           [self.navigationController pushViewController:myEncryption animated:YES];
+                      NSString *userName = [userDefaults valueForKey:@"userName"];
+                      if([[NSUserDefaults standardUserDefaults]objectForKey:userName]==nil){
+                      CSGestureViewController *vc = [[CSGestureViewController alloc]init];
+                      [self.navigationController pushViewController:vc animated:YES];
+                      }
+                      else{
+                      CSGestureResultViewController *myEncryption = [[CSGestureResultViewController alloc]init];
+                      [self.navigationController pushViewController:myEncryption animated:YES];
+                      }
+                      }*/
+        }else if (indexPath.section == 1)
+            {
+            if (indexPath.row == 0)//关于我们
+                {
+                CSAboutusController *aboutus = [[CSAboutusController alloc]init];
+                [self.navigationController pushViewController:aboutus animated:YES];
+                
+                }else if(indexPath.row == 1)
+                    {
+                    CSUseguideAllViewController *useguides = [[CSUseguideAllViewController alloc]init];
+                    [self.navigationController pushViewController:useguides animated:YES];
+                    }else
+                        {
+                        ChangePasswordViewController *resetPassword = [[ChangePasswordViewController alloc]init];
+                        [self.navigationController pushViewController:resetPassword animated:YES];
+                        }
+            }else
+                {
+                UIAlertView *alertView = [[UIAlertView alloc]
+                                          initWithTitle:@"提示"
+                                          message:@"确定退出"
+                                          delegate:self
+                                          cancelButtonTitle:@"否"
+                                          otherButtonTitles:@"是", nil];
+                [alertView show];
     }
 }
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
