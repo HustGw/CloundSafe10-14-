@@ -15,7 +15,7 @@
 @interface CSEncrytionController ()
 @property (nonatomic, strong) CSItemView *picture;
 @property (nonatomic, strong) CSItemView *vedio;
-@property (nonatomic, strong) MBProgressHUD    *HUD;
+@property (nonatomic, strong) MBProgressHUD *HUD;
 @property (nonatomic, strong) UIView *picView;
 @property (nonatomic, strong) UIView *videoView;
 @property(nonatomic,strong) UIImageView *backgroundImageView;

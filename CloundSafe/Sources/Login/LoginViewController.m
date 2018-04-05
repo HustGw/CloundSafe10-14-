@@ -79,7 +79,7 @@ static CGFloat const kContainViewYNormal = 70.0;
         // [self setVideoGuidePage];
     }else{
         NSLog(@"非首次启动");
-        NSArray *imageName = @[@"guideImage1.jpg"];
+        NSArray *imageName = @[@"guideImage1.png"];
         DHGuidePageHUD *guidePage = [[DHGuidePageHUD alloc] dh_initWithFrame:self.view.frame imageNameArray:imageName buttonIsHidden:NO];
         [self.navigationController.view addSubview:guidePage];
         
@@ -117,7 +117,7 @@ static CGFloat const kContainViewYNormal = 70.0;
 
 
 - (void)setStaticGuidePage {
-        NSArray *imageNameArray = @[@"guideImage1.jpg",@"guideImage2.jpg",@"guideImage3.jpg",@"guideImage4.jpg",@"guideImage5.jpg"];
+        NSArray *imageNameArray = @[@"guideImage1.png",@"guideImage2.png",@"guideImage3.png",@"guideImage4.png"];
         DHGuidePageHUD *guidePage = [[DHGuidePageHUD alloc] dh_initWithFrame:self.view.frame imageNameArray:imageNameArray buttonIsHidden:NO];
         guidePage.slideInto = YES;
         [self.navigationController.view addSubview:guidePage];

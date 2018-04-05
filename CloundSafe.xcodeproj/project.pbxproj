@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		271E622B20761C7500CD50E0 /* guideImage1.png in Resources */ = {isa = PBXBuildFile; fileRef = 271E622720761C7500CD50E0 /* guideImage1.png */; };
+		271E622C20761C7500CD50E0 /* guideImage2.png in Resources */ = {isa = PBXBuildFile; fileRef = 271E622820761C7500CD50E0 /* guideImage2.png */; };
+		271E622D20761C7500CD50E0 /* guideimage4.png in Resources */ = {isa = PBXBuildFile; fileRef = 271E622920761C7500CD50E0 /* guideimage4.png */; };
+		271E622E20761C7500CD50E0 /* guideImage3.png in Resources */ = {isa = PBXBuildFile; fileRef = 271E622A20761C7500CD50E0 /* guideImage3.png */; };
 		66AC1A301D3BC007004E9D7E /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 66AC1A2F1D3BC007004E9D7E /* libz.tbd */; };
 		66AC1A321D3BC015004E9D7E /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 66AC1A311D3BC015004E9D7E /* libbz2.tbd */; };
 		66AC1A341D3BC021004E9D7E /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 66AC1A331D3BC021004E9D7E /* libiconv.tbd */; };
@@ -118,11 +122,6 @@
 		C41DC0E31F59479600FB1FB0 /* UIImage+Thumbnail.m in Sources */ = {isa = PBXBuildFile; fileRef = C41DC0E21F59479600FB1FB0 /* UIImage+Thumbnail.m */; };
 		C482C6D21F8E58EA00CA57B9 /* DHGuidePageHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = C482C6C41F8E0A0200CA57B9 /* DHGuidePageHUD.m */; };
 		C482C6D31F8E591C00CA57B9 /* DHGifImageOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = C482C6C21F8E0A0200CA57B9 /* DHGifImageOperation.m */; };
-		C49E45AC1F90ACBD00FD185E /* guideImage1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C482C6C71F8E54E800CA57B9 /* guideImage1.jpg */; };
-		C49E45AD1F90ACC700FD185E /* guideImage2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C482C6C81F8E54E800CA57B9 /* guideImage2.jpg */; };
-		C49E45AE1F90ACD100FD185E /* guideImage3.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C482C6C91F8E54E800CA57B9 /* guideImage3.jpg */; };
-		C49E45AF1F90ACDB00FD185E /* guideImage4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C482C6CA1F8E54E800CA57B9 /* guideImage4.jpg */; };
-		C49E45B01F90AD2100FD185E /* guideImage5.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C482C6CB1F8E54E800CA57B9 /* guideImage5.jpg */; };
 		C49E45B11F90AFC400FD185E /* GuideImage.bundle in Resources */ = {isa = PBXBuildFile; fileRef = C482C6C51F8E0A0200CA57B9 /* GuideImage.bundle */; };
 		C4CB9CC41F35FADF0027296D /* BMChineseSort.m in Sources */ = {isa = PBXBuildFile; fileRef = C4CB9CC31F35FADF0027296D /* BMChineseSort.m */; };
 		C4CB9CC51F35FBBB0027296D /* BMChineseSort.m in Sources */ = {isa = PBXBuildFile; fileRef = C4CB9CC31F35FADF0027296D /* BMChineseSort.m */; };
@@ -268,6 +267,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		271E622720761C7500CD50E0 /* guideImage1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = guideImage1.png; path = "../../../../../云加密app视觉for ios/preview/guideImage1.png"; sourceTree = "<group>"; };
+		271E622820761C7500CD50E0 /* guideImage2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = guideImage2.png; path = "../../../../../云加密app视觉for ios/preview/guideImage2.png"; sourceTree = "<group>"; };
+		271E622920761C7500CD50E0 /* guideimage4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = guideimage4.png; path = "../../../../../云加密app视觉for ios/preview/guideimage4.png"; sourceTree = "<group>"; };
+		271E622A20761C7500CD50E0 /* guideImage3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = guideImage3.png; path = "../../../../../云加密app视觉for ios/preview/guideImage3.png"; sourceTree = "<group>"; };
 		66AC1A2F1D3BC007004E9D7E /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		66AC1A311D3BC015004E9D7E /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
 		66AC1A331D3BC021004E9D7E /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
@@ -465,11 +468,6 @@
 		C482C6C31F8E0A0200CA57B9 /* DHGuidePageHUD.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DHGuidePageHUD.h; sourceTree = "<group>"; };
 		C482C6C41F8E0A0200CA57B9 /* DHGuidePageHUD.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DHGuidePageHUD.m; sourceTree = "<group>"; };
 		C482C6C51F8E0A0200CA57B9 /* GuideImage.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = GuideImage.bundle; sourceTree = "<group>"; };
-		C482C6C71F8E54E800CA57B9 /* guideImage1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = guideImage1.jpg; sourceTree = "<group>"; };
-		C482C6C81F8E54E800CA57B9 /* guideImage2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = guideImage2.jpg; sourceTree = "<group>"; };
-		C482C6C91F8E54E800CA57B9 /* guideImage3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = guideImage3.jpg; sourceTree = "<group>"; };
-		C482C6CA1F8E54E800CA57B9 /* guideImage4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = guideImage4.jpg; sourceTree = "<group>"; };
-		C482C6CB1F8E54E800CA57B9 /* guideImage5.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = guideImage5.jpg; sourceTree = "<group>"; };
 		C4CB9CC21F35FADF0027296D /* BMChineseSort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BMChineseSort.h; sourceTree = "<group>"; };
 		C4CB9CC31F35FADF0027296D /* BMChineseSort.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BMChineseSort.m; sourceTree = "<group>"; };
 		C4F4BDFF1F009F29008CBE89 /* CSUseguidesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSUseguidesController.h; sourceTree = "<group>"; };
@@ -1141,11 +1139,10 @@
 		C482C6C61F8E54E800CA57B9 /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				C482C6C71F8E54E800CA57B9 /* guideImage1.jpg */,
-				C482C6C81F8E54E800CA57B9 /* guideImage2.jpg */,
-				C482C6C91F8E54E800CA57B9 /* guideImage3.jpg */,
-				C482C6CA1F8E54E800CA57B9 /* guideImage4.jpg */,
-				C482C6CB1F8E54E800CA57B9 /* guideImage5.jpg */,
+				271E622720761C7500CD50E0 /* guideImage1.png */,
+				271E622820761C7500CD50E0 /* guideImage2.png */,
+				271E622A20761C7500CD50E0 /* guideImage3.png */,
+				271E622920761C7500CD50E0 /* guideimage4.png */,
 			);
 			path = Images;
 			sourceTree = "<group>";
@@ -1637,11 +1634,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C49E45B11F90AFC400FD185E /* GuideImage.bundle in Resources */,
-				C49E45B01F90AD2100FD185E /* guideImage5.jpg in Resources */,
-				C49E45AF1F90ACDB00FD185E /* guideImage4.jpg in Resources */,
-				C49E45AE1F90ACD100FD185E /* guideImage3.jpg in Resources */,
-				C49E45AD1F90ACC700FD185E /* guideImage2.jpg in Resources */,
-				C49E45AC1F90ACBD00FD185E /* guideImage1.jpg in Resources */,
+				271E622B20761C7500CD50E0 /* guideImage1.png in Resources */,
+				271E622C20761C7500CD50E0 /* guideImage2.png in Resources */,
 				E7CFA3731D48AF4600C6DB62 /* PlayButtonOverlayLargeTap@3x.png in Resources */,
 				95E1F15A1D1ECDBE008C12B7 /* LaunchScreen.storyboard in Resources */,
 				E7CFA37D1D48AF4600C6DB62 /* VideoOverlay.png in Resources */,
@@ -1656,6 +1650,7 @@
 				E7CFA3631D48AF4600C6DB62 /* ImageSelectedOff@2x.png in Resources */,
 				E7CFA3711D48AF4600C6DB62 /* PlayButtonOverlayLargeTap.png in Resources */,
 				E7CFA37E1D48AF4600C6DB62 /* VideoOverlay@2x.png in Resources */,
+				271E622D20761C7500CD50E0 /* guideimage4.png in Resources */,
 				E7CFA36B1D48AF4600C6DB62 /* ImageSelectedSmallOn.png in Resources */,
 				95E1F1F61D1ED139008C12B7 /* MJRefresh.bundle in Resources */,
 				E7CFA3681D48AF4600C6DB62 /* ImageSelectedSmallOff.png in Resources */,
@@ -1679,6 +1674,7 @@
 				E7CFA36D1D48AF4600C6DB62 /* ImageSelectedSmallOn@3x.png in Resources */,
 				E7CFA37A1D48AF4600C6DB62 /* UIBarButtonItemGrid.png in Resources */,
 				E7CFA3701D48AF4600C6DB62 /* PlayButtonOverlayLarge@3x.png in Resources */,
+				271E622E20761C7500CD50E0 /* guideImage3.png in Resources */,
 				E7CFA3641D48AF4600C6DB62 /* ImageSelectedOff@3x.png in Resources */,
 				E7CFA3671D48AF4600C6DB62 /* ImageSelectedOn@3x.png in Resources */,
 				E7CFA35E1D48AF4600C6DB62 /* .gitkeep in Resources */,
