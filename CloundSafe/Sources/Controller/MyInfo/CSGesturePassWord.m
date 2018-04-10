@@ -38,7 +38,7 @@
             [btn setTag:i];
             btn.userInteractionEnabled = NO;
             if (self.lineColor == nil) {
-                self.lineColor = [UIColor greenColor];
+                self.lineColor = [UIColor colorWithRed:0.22 green:0.77 blue:0.51 alpha:1];
             }
             [self addSubview:btn];
         }
@@ -62,7 +62,7 @@
         CGContextAddLineToPoint(ctx, self.currentPoint.x, self.currentPoint.y);
     }
     
-    CGContextSetLineWidth(ctx, 12);
+    CGContextSetLineWidth(ctx, 4);
     CGContextSetLineCap(ctx, kCGLineCapRound);
     CGContextSetLineJoin(ctx, kCGLineJoinRound);
     [self.lineColor set];
