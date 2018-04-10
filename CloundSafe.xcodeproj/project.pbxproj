@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		271E622B20761C7500CD50E0 /* guideImage1.png in Resources */ = {isa = PBXBuildFile; fileRef = 271E622720761C7500CD50E0 /* guideImage1.png */; };
 		271E622C20761C7500CD50E0 /* guideImage2.png in Resources */ = {isa = PBXBuildFile; fileRef = 271E622820761C7500CD50E0 /* guideImage2.png */; };
-		271E622D20761C7500CD50E0 /* guideimage4.png in Resources */ = {isa = PBXBuildFile; fileRef = 271E622920761C7500CD50E0 /* guideimage4.png */; };
+		271E622D20761C7500CD50E0 /* guideImage4.png in Resources */ = {isa = PBXBuildFile; fileRef = 271E622920761C7500CD50E0 /* guideImage4.png */; };
 		271E622E20761C7500CD50E0 /* guideImage3.png in Resources */ = {isa = PBXBuildFile; fileRef = 271E622A20761C7500CD50E0 /* guideImage3.png */; };
 		66AC1A301D3BC007004E9D7E /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 66AC1A2F1D3BC007004E9D7E /* libz.tbd */; };
 		66AC1A321D3BC015004E9D7E /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 66AC1A311D3BC015004E9D7E /* libbz2.tbd */; };
@@ -269,7 +269,7 @@
 /* Begin PBXFileReference section */
 		271E622720761C7500CD50E0 /* guideImage1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = guideImage1.png; path = "../../../../../云加密app视觉for ios/preview/guideImage1.png"; sourceTree = "<group>"; };
 		271E622820761C7500CD50E0 /* guideImage2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = guideImage2.png; path = "../../../../../云加密app视觉for ios/preview/guideImage2.png"; sourceTree = "<group>"; };
-		271E622920761C7500CD50E0 /* guideimage4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = guideimage4.png; path = "../../../../../云加密app视觉for ios/preview/guideimage4.png"; sourceTree = "<group>"; };
+		271E622920761C7500CD50E0 /* guideImage4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = guideImage4.png; path = "../../../../../云加密app视觉for ios/preview/guideImage4.png"; sourceTree = "<group>"; };
 		271E622A20761C7500CD50E0 /* guideImage3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = guideImage3.png; path = "../../../../../云加密app视觉for ios/preview/guideImage3.png"; sourceTree = "<group>"; };
 		66AC1A2F1D3BC007004E9D7E /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		66AC1A311D3BC015004E9D7E /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
@@ -1142,7 +1142,7 @@
 				271E622720761C7500CD50E0 /* guideImage1.png */,
 				271E622820761C7500CD50E0 /* guideImage2.png */,
 				271E622A20761C7500CD50E0 /* guideImage3.png */,
-				271E622920761C7500CD50E0 /* guideimage4.png */,
+				271E622920761C7500CD50E0 /* guideImage4.png */,
 			);
 			path = Images;
 			sourceTree = "<group>";
@@ -1650,7 +1650,7 @@
 				E7CFA3631D48AF4600C6DB62 /* ImageSelectedOff@2x.png in Resources */,
 				E7CFA3711D48AF4600C6DB62 /* PlayButtonOverlayLargeTap.png in Resources */,
 				E7CFA37E1D48AF4600C6DB62 /* VideoOverlay@2x.png in Resources */,
-				271E622D20761C7500CD50E0 /* guideimage4.png in Resources */,
+				271E622D20761C7500CD50E0 /* guideImage4.png in Resources */,
 				E7CFA36B1D48AF4600C6DB62 /* ImageSelectedSmallOn.png in Resources */,
 				95E1F1F61D1ED139008C12B7 /* MJRefresh.bundle in Resources */,
 				E7CFA3681D48AF4600C6DB62 /* ImageSelectedSmallOff.png in Resources */,

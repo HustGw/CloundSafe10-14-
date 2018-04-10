@@ -299,13 +299,13 @@ static BOOL RemberUsername;
                     make.size.mas_offset(CGSizeMake(60, 30));
                 }];
                 }
-    cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0);
+//    cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0);
     return cell;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
-    return 10;
+    return 1;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
@@ -329,7 +329,7 @@ static BOOL RemberUsername;
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 50;
+    return 55;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
