@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		271E622B20761C7500CD50E0 /* guideImage1.png in Resources */ = {isa = PBXBuildFile; fileRef = 271E622720761C7500CD50E0 /* guideImage1.png */; };
-		271E622C20761C7500CD50E0 /* guideImage2.png in Resources */ = {isa = PBXBuildFile; fileRef = 271E622820761C7500CD50E0 /* guideImage2.png */; };
-		271E622D20761C7500CD50E0 /* guideImage4.png in Resources */ = {isa = PBXBuildFile; fileRef = 271E622920761C7500CD50E0 /* guideImage4.png */; };
-		271E622E20761C7500CD50E0 /* guideImage3.png in Resources */ = {isa = PBXBuildFile; fileRef = 271E622A20761C7500CD50E0 /* guideImage3.png */; };
+		27C0BB43207C94DF00E39FD1 /* guideImage1.png in Resources */ = {isa = PBXBuildFile; fileRef = 27C0BB3F207C94DF00E39FD1 /* guideImage1.png */; };
+		27C0BB44207C94DF00E39FD1 /* guideImage2.png in Resources */ = {isa = PBXBuildFile; fileRef = 27C0BB40207C94DF00E39FD1 /* guideImage2.png */; };
+		27C0BB45207C94DF00E39FD1 /* guideImage4.png in Resources */ = {isa = PBXBuildFile; fileRef = 27C0BB41207C94DF00E39FD1 /* guideImage4.png */; };
+		27C0BB46207C94DF00E39FD1 /* guideImage3.png in Resources */ = {isa = PBXBuildFile; fileRef = 27C0BB42207C94DF00E39FD1 /* guideImage3.png */; };
 		66AC1A301D3BC007004E9D7E /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 66AC1A2F1D3BC007004E9D7E /* libz.tbd */; };
 		66AC1A321D3BC015004E9D7E /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 66AC1A311D3BC015004E9D7E /* libbz2.tbd */; };
 		66AC1A341D3BC021004E9D7E /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 66AC1A331D3BC021004E9D7E /* libiconv.tbd */; };
@@ -267,10 +267,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		271E622720761C7500CD50E0 /* guideImage1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = guideImage1.png; path = "../../../../../云加密app视觉for ios/preview/guideImage1.png"; sourceTree = "<group>"; };
-		271E622820761C7500CD50E0 /* guideImage2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = guideImage2.png; path = "../../../../../云加密app视觉for ios/preview/guideImage2.png"; sourceTree = "<group>"; };
-		271E622920761C7500CD50E0 /* guideImage4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = guideImage4.png; path = "../../../../../云加密app视觉for ios/preview/guideImage4.png"; sourceTree = "<group>"; };
-		271E622A20761C7500CD50E0 /* guideImage3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = guideImage3.png; path = "../../../../../云加密app视觉for ios/preview/guideImage3.png"; sourceTree = "<group>"; };
+		27C0BB3F207C94DF00E39FD1 /* guideImage1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guideImage1.png; sourceTree = "<group>"; };
+		27C0BB40207C94DF00E39FD1 /* guideImage2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guideImage2.png; sourceTree = "<group>"; };
+		27C0BB41207C94DF00E39FD1 /* guideImage4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guideImage4.png; sourceTree = "<group>"; };
+		27C0BB42207C94DF00E39FD1 /* guideImage3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guideImage3.png; sourceTree = "<group>"; };
 		66AC1A2F1D3BC007004E9D7E /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		66AC1A311D3BC015004E9D7E /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
 		66AC1A331D3BC021004E9D7E /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
@@ -1139,10 +1139,10 @@
 		C482C6C61F8E54E800CA57B9 /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				271E622720761C7500CD50E0 /* guideImage1.png */,
-				271E622820761C7500CD50E0 /* guideImage2.png */,
-				271E622A20761C7500CD50E0 /* guideImage3.png */,
-				271E622920761C7500CD50E0 /* guideImage4.png */,
+				27C0BB3F207C94DF00E39FD1 /* guideImage1.png */,
+				27C0BB40207C94DF00E39FD1 /* guideImage2.png */,
+				27C0BB42207C94DF00E39FD1 /* guideImage3.png */,
+				27C0BB41207C94DF00E39FD1 /* guideImage4.png */,
 			);
 			path = Images;
 			sourceTree = "<group>";
@@ -1634,8 +1634,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C49E45B11F90AFC400FD185E /* GuideImage.bundle in Resources */,
-				271E622B20761C7500CD50E0 /* guideImage1.png in Resources */,
-				271E622C20761C7500CD50E0 /* guideImage2.png in Resources */,
 				E7CFA3731D48AF4600C6DB62 /* PlayButtonOverlayLargeTap@3x.png in Resources */,
 				95E1F15A1D1ECDBE008C12B7 /* LaunchScreen.storyboard in Resources */,
 				E7CFA37D1D48AF4600C6DB62 /* VideoOverlay.png in Resources */,
@@ -1648,9 +1646,10 @@
 				95E1F1DC1D1ED139008C12B7 /* LICENSE in Resources */,
 				E7CFA37B1D48AF4600C6DB62 /* UIBarButtonItemGrid@2x.png in Resources */,
 				E7CFA3631D48AF4600C6DB62 /* ImageSelectedOff@2x.png in Resources */,
+				27C0BB45207C94DF00E39FD1 /* guideImage4.png in Resources */,
 				E7CFA3711D48AF4600C6DB62 /* PlayButtonOverlayLargeTap.png in Resources */,
 				E7CFA37E1D48AF4600C6DB62 /* VideoOverlay@2x.png in Resources */,
-				271E622D20761C7500CD50E0 /* guideImage4.png in Resources */,
+				27C0BB44207C94DF00E39FD1 /* guideImage2.png in Resources */,
 				E7CFA36B1D48AF4600C6DB62 /* ImageSelectedSmallOn.png in Resources */,
 				95E1F1F61D1ED139008C12B7 /* MJRefresh.bundle in Resources */,
 				E7CFA3681D48AF4600C6DB62 /* ImageSelectedSmallOff.png in Resources */,
@@ -1667,14 +1666,15 @@
 				E7CFA35F1D48AF4600C6DB62 /* ImageError.png in Resources */,
 				E7CFA37F1D48AF4600C6DB62 /* VideoOverlay@3x.png in Resources */,
 				E7CFA3791D48AF4600C6DB62 /* UIBarButtonItemArrowRight@3x.png in Resources */,
+				27C0BB46207C94DF00E39FD1 /* guideImage3.png in Resources */,
 				E7CFA3621D48AF4600C6DB62 /* ImageSelectedOff.png in Resources */,
 				E7CFA3611D48AF4600C6DB62 /* ImageError@3x.png in Resources */,
 				E7CFA3771D48AF4600C6DB62 /* UIBarButtonItemArrowRight.png in Resources */,
 				E7CFA3751D48AF4600C6DB62 /* UIBarButtonItemArrowLeft@2x.png in Resources */,
 				E7CFA36D1D48AF4600C6DB62 /* ImageSelectedSmallOn@3x.png in Resources */,
+				27C0BB43207C94DF00E39FD1 /* guideImage1.png in Resources */,
 				E7CFA37A1D48AF4600C6DB62 /* UIBarButtonItemGrid.png in Resources */,
 				E7CFA3701D48AF4600C6DB62 /* PlayButtonOverlayLarge@3x.png in Resources */,
-				271E622E20761C7500CD50E0 /* guideImage3.png in Resources */,
 				E7CFA3641D48AF4600C6DB62 /* ImageSelectedOff@3x.png in Resources */,
 				E7CFA3671D48AF4600C6DB62 /* ImageSelectedOn@3x.png in Resources */,
 				E7CFA35E1D48AF4600C6DB62 /* .gitkeep in Resources */,
