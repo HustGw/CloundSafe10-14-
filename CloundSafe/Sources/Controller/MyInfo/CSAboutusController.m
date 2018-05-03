@@ -24,6 +24,11 @@ static NSString *const description = @"本系统可对移动端文件进行加�
     [self.navigationItem setLeftBarButtonItem:leftButton];
     [self initSubView];
 }
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    self.navigationController.navigationBarHidden =NO;
+}
 - (void)initSubView
 {
     self.imgView = [[UIImageView alloc] init];
