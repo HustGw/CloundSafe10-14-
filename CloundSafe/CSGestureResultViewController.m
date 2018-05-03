@@ -16,7 +16,7 @@
 #define SCREEN_HEIGHT [UIScreen mainScreen].bounds.size.height
 @interface CSGestureResultViewController ()
 @property(nonatomic,strong)UIButton *ForgetButton;
-
+@property (nonatomic ,strong)UILabel *statusLabel;
 @end
 
 @implementation CSGestureResultViewController
@@ -35,7 +35,27 @@
     self.fd_interactivePopDisabled = YES;
     [self bttomForgetButton];
     [self bulidUi];
+    [self topStatusLabel];
     // Do any additional setup after loading the view.
+}
+-(void)topStatusLabel{
+    CGSize statusLabelSize = [self sizeWithText:@"请绘制手势密码" maxSize:CGSizeMake(100,100) fontSize:16.0];
+    NSLog(@"the width is %f",statusLabelSize.width);
+    _statusLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2-100, self.navigationController.navigationBar.frame.size.height+60, 200, statusLabelSize.height)];
+    self.statusLabel.text = @"请绘制手势密码";
+    self.statusLabel.textAlignment = NSTextAlignmentCenter;
+    self.statusLabel.textColor = [UIColor colorWithRed:0.19 green:0.76 blue:0.49 alpha:1];
+    self.statusLabel.font = [UIFont systemFontOfSize:16.0];
+    //self.statusLabel.frame = CGRectMake(self.view.frame.size.width/2-statusLabelSize.width/2, self.navigationController.navigationBar.frame.size.height+10, 100, 50);
+    [self.view addSubview:self.statusLabel];
+    
+    
+}
+- (CGSize)sizeWithText:(NSString *)text maxSize:(CGSize)maxSize fontSize:(CGFloat)fontSize
+{
+    //计算文本的大小
+    CGSize nameSize = [text boundingRectWithSize:maxSize options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:fontSize]} context:nil].size;
+    return nameSize;
 }
 - (void)viewDidAppear:(BOOL)animated
 {
@@ -69,10 +89,13 @@
             [self.navigationController pushViewController:myEncryption animated:YES];
             return YES;
         }else{
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"提示框"message:@"手势错误" preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"知道了" style:UIAlertActionStyleDefault handler:nil];
-            [alertController addAction:okAction];
-            [self presentViewController:alertController animated:YES completion:nil];
+//            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"提示框"message:@"手势错误" preferredStyle:UIAlertControllerStyleAlert];
+//            UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"知道了" style:UIAlertActionStyleDefault handler:nil];
+//            [alertController addAction:okAction];
+//            [self presentViewController:alertController animated:YES completion:nil];
+            self.statusLabel.text = @"手势错误！请重新输入";
+            self.statusLabel.textColor = [UIColor redColor];
+            [self shakeAnimationForView:self.statusLabel];
             return NO;
         }
         
@@ -94,6 +117,22 @@
 //            
         }return NO;
     };
+}
+-(void)shakeAnimationForView:(UIView *)view{
+    CALayer *viewLayer = view.layer;
+    CGPoint position = viewLayer.position;
+    CGPoint left = CGPointMake(position.x-10, position.y);
+    CGPoint right = CGPointMake(position.x+10, position.y);
+    
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"position"];
+    [animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+    [animation setFromValue:[NSValue valueWithCGPoint:left]];
+    [animation setToValue:[NSValue valueWithCGPoint:right]];
+    [animation setAutoreverses:YES];
+    [animation setDuration:0.08];
+    [animation setRepeatCount:3];
+    [viewLayer addAnimation:animation forKey:nil];
+    
 }
 -(void)bttomForgetButton{
     _ForgetButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2-44, self.view.frame.size.height-50, 88 , 44)];
