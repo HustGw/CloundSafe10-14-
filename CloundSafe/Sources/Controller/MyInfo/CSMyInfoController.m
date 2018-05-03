@@ -74,7 +74,8 @@ static BOOL RemberUsername;
     self.my_photobackground.layer.borderWidth = 1.5f;
     self.my_photobackground.layer.borderColor = [UIColor whiteColor].CGColor;
     [self.view addSubview:self.my_photobackground];
-    UITapGestureRecognizer *top = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(touchesBegan:)];
+    UITapGestureRecognizer *top = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(touchesBegan: withEvent:)];
+    self.my_photobackground.userInteractionEnabled = YES;
     [self.my_photobackground addGestureRecognizer:top];
     [self.view addSubview:[[UIView alloc]initWithFrame:CGRectZero]];
     self.tableView = [[UITableView alloc]initWithFrame:CGRectZero style:UITableViewStyleGrouped];
@@ -92,6 +93,8 @@ static BOOL RemberUsername;
 
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {        //选取照片上传
+    UITouch *touch = [[event allTouches] anyObject];
+    if ([touch view] == self.my_photobackground) {
     UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:@"选择" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     UIApplication *action = [UIAlertAction actionWithTitle:@"拍照" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
         [self addAction:action];
@@ -107,7 +110,7 @@ static BOOL RemberUsername;
     [actionSheet addAction:action01];
     [actionSheet addAction:action02];
     [self presentViewController:actionSheet animated:YES completion:nil];
-    
+    }
 }
 
 - (void)addAction:(UIAlertAction *)action
