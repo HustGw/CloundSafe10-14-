@@ -21,6 +21,7 @@
 #import "CSMyInfoController.h"
 #import "CSEncrytionController.h"
 #import "DHGuidePageHUD.h"
+#import "EmergencyViewController.h"
 
 static CGFloat const kContainViewYNormal = 70.0;
 @interface LoginViewController ()<UITextFieldDelegate>
@@ -41,6 +42,7 @@ static CGFloat const kContainViewYNormal = 70.0;
 @property (nonatomic, strong) UIButton      *loginButton;
 @property (nonatomic, strong) UIButton      *rememberButton;
 @property (nonatomic, strong) UIButton      *registerButton;
+@property (nonatomic, strong) UIButton      *Emergency;
 @property (nonatomic, assign) BOOL          isKeyboardShowing;
 @property (nonatomic, assign) BOOL          isLogining;
 @property (nonatomic, strong) MBProgressHUD    *HUD;
@@ -58,6 +60,7 @@ static CGFloat const kContainViewYNormal = 70.0;
     }
     return self;
 }
+
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
     [self.usernameField resignFirstResponder];
@@ -96,8 +99,6 @@ static CGFloat const kContainViewYNormal = 70.0;
         ;
     }else
     {
-
-        //用户未登录
         //登录成功创建用户目录
         NSString *userName = [userDefaults valueForKey:@"userName"];
         NSString *userDirectory = [NSString stringWithFormat:@"%@/%@",DocumentPath, userName];
@@ -114,7 +115,6 @@ static CGFloat const kContainViewYNormal = 70.0;
     }
     
 }
-
 
 - (void)setStaticGuidePage {
         NSArray *imageNameArray = @[@"guideImage1.png",@"guideImage2.png",@"guideImage3.png",@"guideImage4.png"];
@@ -176,7 +176,6 @@ static CGFloat const kContainViewYNormal = 70.0;
 
 -(void)viewWillLayoutSubviews
 {
-    
     self.backgroundImageView.frame = self.view.frame;
     
     self.containView.frame = (CGRect){0,kContainViewYNormal,kScreenWidth,kScreenHeight};
@@ -193,6 +192,7 @@ static CGFloat const kContainViewYNormal = 70.0;
     CGSize screenSize = [[UIScreen mainScreen]bounds].size;
     CGSize maxSize= CGSizeMake(screenSize.width * 0.5, MAXFLOAT);
     CGSize forgetSize = [self sizeWithText:@"忘记密码？" maxSize:maxSize fontSize:14.0];
+    CGSize EnergencySize = [self sizeWithText:@"紧急冻结？" maxSize:CGSizeMake(100,100) fontSize:14.0];
     [self.usernameField mas_updateConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.containView.mas_left).offset(50);
         make.top.equalTo(self.containView.mas_top).offset(162);
@@ -227,8 +227,15 @@ static CGFloat const kContainViewYNormal = 70.0;
         make.height.equalTo(@45);
     }];
     
+    [self.Emergency mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.containView.mas_left).offset(50);
+        make.right.equalTo(self.containView.mas_right).offset(-50);
+        make.top.equalTo(self.loginButton.mas_bottom).offset(60);
+        make.size.mas_equalTo(CGSizeMake(EnergencySize.width+10, EnergencySize.height+10));
+    }];
     CGSize registerSize = [self sizeWithText:@"新用户注册" maxSize:CGSizeMake(100,100) fontSize:14.0];
     CGSize rememberSize = [self sizeWithText:@"记住用户名" maxSize:CGSizeMake(100,100) fontSize:14.0];
+    
     [self.registerButton mas_updateConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.containView.mas_centerX).offset(-(int)registerSize.width/2);
         make.top.equalTo(self.loginButton.mas_bottom).offset(20);
@@ -367,6 +374,14 @@ static CGFloat const kContainViewYNormal = 70.0;
     self.forgetPwdButton.layer.borderWidth = 0;
     [self.containView addSubview:self.forgetPwdButton];
     
+    self.Emergency = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.Emergency setTitle:@"紧急冻结?" forState:UIControlStateNormal];
+    [self.Emergency setTitleColor:[UIColor colorWithRed:0.4 green:0.40 blue:0.40 alpha:1] forState:UIControlStateNormal];
+    self.Emergency.titleLabel.font = [UIFont systemFontOfSize:14.0];
+    [self.Emergency setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+    self.Emergency.layer.borderWidth = 0;
+    [self.containView addSubview:self.Emergency];
+    
     self.UseforForget=[[UITextField alloc]init];
     
     self.loginButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -388,7 +403,7 @@ static CGFloat const kContainViewYNormal = 70.0;
     [self.passwordField addTarget:self action:@selector(login) forControlEvents:UIControlEventEditingDidEndOnExit];
     [self.forgetPwdButton addTarget:self action:@selector(goResetPwd) forControlEvents:UIControlEventTouchUpInside];
     [self.loginButton addTarget:self action:@selector(login) forControlEvents:UIControlEventTouchUpInside];
-
+    [self.Emergency addTarget:self action:@selector(goEmergency) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (BOOL)CheckboxClick:(UIButton*)btn
@@ -429,6 +444,13 @@ static CGFloat const kContainViewYNormal = 70.0;
             }
         }];
     }
+    
+}
+#pragma mare - 紧急冻结
+-(void)goEmergency
+{
+    EmergencyViewController *emergencyViewController = [[EmergencyViewController alloc]init];
+    [self.navigationController pushViewController:emergencyViewController animated:YES];
     
 }
 #pragma mark - Private Methods

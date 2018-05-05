@@ -34,6 +34,8 @@
     [super viewDidLoad];
     
     self.navigationItem.title = @"通讯录";
+    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:20.0/255.0 green:205.0/255.0 blue:111.0/255.0 alpha:1.0];
+    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     UIBarButtonItem *left = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"backIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(back)];
     [left setTintColor:[UIColor whiteColor]];
     [self.navigationItem setLeftBarButtonItem:left];

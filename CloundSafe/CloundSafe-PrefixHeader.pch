@@ -53,6 +53,7 @@ typedef NS_ENUM(NSInteger, ContactCellType)
 #define DownLoadKeyURL      @"http://119.23.162.138/cloud/File/DownLoadFile.do"
 #define UpLoadKeyURL        @"http://119.23.162.138/cloud/File/UpLoadFile.do"
 #define LogoutURL           @"http://119.23.162.138/cloud/Employee/Logout.do"
+#define FreezeURL           @"http://119.23.162.138/cloud/Employee/Freeze.do"
 
 #define DBFILE_NAME @"contact.sqlite3"
 

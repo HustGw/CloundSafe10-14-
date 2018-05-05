@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2703AD03209DE3E20014A1A1 /* UnfreezeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2703AD02209DE3E20014A1A1 /* UnfreezeViewController.m */; };
+		2705551C209DA5F800A069ED /* EmergencyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2705551B209DA5F800A069ED /* EmergencyViewController.m */; };
 		27C0BB43207C94DF00E39FD1 /* guideImage1.png in Resources */ = {isa = PBXBuildFile; fileRef = 27C0BB3F207C94DF00E39FD1 /* guideImage1.png */; };
 		27C0BB44207C94DF00E39FD1 /* guideImage2.png in Resources */ = {isa = PBXBuildFile; fileRef = 27C0BB40207C94DF00E39FD1 /* guideImage2.png */; };
 		27C0BB45207C94DF00E39FD1 /* guideImage4.png in Resources */ = {isa = PBXBuildFile; fileRef = 27C0BB41207C94DF00E39FD1 /* guideImage4.png */; };
@@ -267,6 +269,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2703AD01209DE3E20014A1A1 /* UnfreezeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UnfreezeViewController.h; sourceTree = "<group>"; };
+		2703AD02209DE3E20014A1A1 /* UnfreezeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UnfreezeViewController.m; sourceTree = "<group>"; };
+		2705551A209DA5F800A069ED /* EmergencyViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmergencyViewController.h; sourceTree = "<group>"; };
+		2705551B209DA5F800A069ED /* EmergencyViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EmergencyViewController.m; sourceTree = "<group>"; };
 		27C0BB3F207C94DF00E39FD1 /* guideImage1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guideImage1.png; sourceTree = "<group>"; };
 		27C0BB40207C94DF00E39FD1 /* guideImage2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guideImage2.png; sourceTree = "<group>"; };
 		27C0BB41207C94DF00E39FD1 /* guideImage4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guideImage4.png; sourceTree = "<group>"; };
@@ -953,6 +959,10 @@
 				95E1F1FF1D1ED1A3008C12B7 /* ResetPasswordViewController.m */,
 				E73A5C231DD8689700B42350 /* OffLinePhoneBookController.h */,
 				E73A5C241DD8689700B42350 /* OffLinePhoneBookController.m */,
+				2705551A209DA5F800A069ED /* EmergencyViewController.h */,
+				2705551B209DA5F800A069ED /* EmergencyViewController.m */,
+				2703AD01209DE3E20014A1A1 /* UnfreezeViewController.h */,
+				2703AD02209DE3E20014A1A1 /* UnfreezeViewController.m */,
 				C482C6C61F8E54E800CA57B9 /* Images */,
 			);
 			path = Login;
@@ -1805,6 +1815,7 @@
 				E7F9C7351D54C1530074689D /* AFHTTPSessionManager.m in Sources */,
 				95E1F1F31D1ED139008C12B7 /* MJRefreshGifHeader.m in Sources */,
 				C482C6D21F8E58EA00CA57B9 /* DHGuidePageHUD.m in Sources */,
+				2705551C209DA5F800A069ED /* EmergencyViewController.m in Sources */,
 				E77F58911D98E29D002C4B55 /* SDWebImageDownloader.m in Sources */,
 				E746497D1DB4ED870057BBBF /* CSContactEmailCell.m in Sources */,
 				95DF31DD1D2A78CC006A4EF8 /* FICImageFormat.m in Sources */,
@@ -1859,6 +1870,7 @@
 				95E0D27F1D241CAB000B7F65 /* UIView+Extension.m in Sources */,
 				95E1F1FA1D1ED139008C12B7 /* UIView+MJExtension.m in Sources */,
 				95E1F1F81D1ED139008C12B7 /* UIScrollView+MJExtension.m in Sources */,
+				2703AD03209DE3E20014A1A1 /* UnfreezeViewController.m in Sources */,
 				95A1B2971D29621D004AFF48 /* TZImageManager.m in Sources */,
 				95E1F1EC1D1ED139008C12B7 /* MJRefreshHeader.m in Sources */,
 				95E1F1F51D1ED139008C12B7 /* MJRefreshStateHeader.m in Sources */,
