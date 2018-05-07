@@ -26,15 +26,19 @@ static CGFloat const kContainViewYNormal = 70.0;
 @property (nonatomic, strong) MyTextField *usernameField;
 @property (nonatomic, strong) MyTextField *passwordField;
 @property (nonatomic,strong) MyTextField *verifyCodeField;
+@property (nonatomic, strong) MyTextField *mailboxField;
 @property (nonatomic, strong) MBProgressHUD    *HUD;
 @property (nonatomic,strong) UIButton *verifyCodeButton;
 @property (nonatomic,strong) UIImageView *leftUsernameView;
 @property (nonatomic,strong) UIImageView *leftPasswdView;
 @property (nonatomic,strong) UIImageView *leftVerifyCodeView;
+@property (nonatomic,strong) UIImageView *leftMailBoxView;
 @property (nonatomic, strong) UIButton    *registeButton;
+
 
 @property (nonatomic, assign) BOOL isKeyboardShowing;
 @property (nonatomic,assign) BOOL isRegisting;
+@property (nonatomic, assign) BOOL isRighrtmailbox;
 
 @end
 
@@ -88,9 +92,15 @@ static CGFloat const kContainViewYNormal = 70.0;
         make.right.equalTo(self.usernameField.mas_right);
         make.height.equalTo(@30);
     }];
-    [self.passwordField mas_updateConstraints:^(MASConstraintMaker *make) {
+    [self.mailboxField mas_updateConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.containView.mas_left).offset(50);
         make.top.equalTo(self.verifyCodeField.mas_bottom).offset(20);
+        make.right.equalTo(self.containView.mas_right).offset(-50);
+        make.height.equalTo(@30);
+    }];
+    [self.passwordField mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.containView.mas_left).offset(50);
+        make.top.equalTo(self.mailboxField.mas_bottom).offset(20);
         make.right.equalTo(self.containView.mas_right).offset(-50);
         make.height.equalTo(@30);
     }];
@@ -121,8 +131,12 @@ static CGFloat const kContainViewYNormal = 70.0;
         if ([textField.text isEqualToString:@""]) {
             self.passwordField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"请输入新密码" attributes:@{NSForegroundColorAttributeName:[UIColor colorWithWhite:0.6 alpha:1.000], NSFontAttributeName:[UIFont italicSystemFontOfSize:14]}];
         }
-    }else
-    {
+    }else  if(textField == self.mailboxField)
+        {
+        if([textField.text isEqualToString:@""]){
+            self.mailboxField.attributedPlaceholder = [[NSAttributedString alloc]initWithString:@"请输入邮箱" attributes:@{NSForegroundColorAttributeName:[UIColor colorWithWhite:0.6 alpha:1.000],NSFontAttributeName:[UIFont italicSystemFontOfSize:14]}];
+        }
+        }else{
         if ([textField.text isEqualToString:@""]) {
             self.verifyCodeField.attributedPlaceholder =[[NSAttributedString alloc] initWithString:@"请输入验证码" attributes:@{NSForegroundColorAttributeName:[UIColor colorWithWhite:0.6 alpha:1.000],NSFontAttributeName:[UIFont italicSystemFontOfSize:14]}];
         }
@@ -158,7 +172,7 @@ static CGFloat const kContainViewYNormal = 70.0;
 #pragma mark - 注册按钮
 - (void)didRegister
 {
-    if (![self.usernameField.text isEqualToString:@""] && ![self.passwordField.text isEqualToString:@""]&&![self.verifyCodeField.text isEqualToString:@""] && [self.usernameField.text length] == 11)
+    if (![self.usernameField.text isEqualToString:@""] && ![self.passwordField.text isEqualToString:@""]&&![self.verifyCodeField.text isEqualToString:@""] &&![self.mailboxField.text isEqualToString:@""]&& [self.usernameField.text length] == 11)
     {
         NSDictionary *parameters = [[NSDictionary alloc]initWithObjectsAndKeys:self.usernameField.text,@"emp_phone", nil];
         NSString *url = JudgePhoneURL;
@@ -195,8 +209,15 @@ static CGFloat const kContainViewYNormal = 70.0;
 #pragma mark - 开始注册
 - (void)beginRegister
 {
-    NSDictionary *parameters = [[NSDictionary alloc]initWithObjectsAndKeys:self.usernameField.text,@"emp_phone",self.passwordField.text,@"emp_password",self.verifyCodeField.text,@"code", nil];
-
+    [userDefaults synchronize];
+    NSDictionary *parameters = [[NSDictionary alloc]initWithObjectsAndKeys:self.usernameField.text,@"emp_phone",self.passwordField.text,@"emp_password",self.mailboxField.text,@"emp_email",self.verifyCodeField.text,@"code",nil];
+    
+    self.isRighrtmailbox = [self isValidateEmail:self.mailboxField.text];
+    if(self.isRighrtmailbox == NO)
+        {
+        [self alert:@"邮箱填写错误"];
+        }else
+  {
     NSString *url = RegisterURL;
 
     [[AFHTTPSessionManager manager] POST:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
@@ -215,6 +236,7 @@ static CGFloat const kContainViewYNormal = 70.0;
                 [self alert:@"验证码失效！"];
             }else//注册成功
             {
+            [userDefaults setObject:self.mailboxField.text forKey:@"userMail"];
                 [self alert:@"注册成功！"];
                 
             }
@@ -226,9 +248,17 @@ static CGFloat const kContainViewYNormal = 70.0;
         NSLog(@"网络请求失败：%@",error);
         [self alert:@"无网络连接！"];
     }];
-    
+  }
 
 }
+
+//邮箱地址的正则表达式
+- (BOOL)isValidateEmail:(NSString *)email{
+    NSString *emailRegex = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}";
+    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
+    return [emailTest evaluateWithObject:email];
+}
+
 #pragma mark - 获取验证码
 -(void)sendVerifyCode
 {
@@ -399,6 +429,24 @@ static CGFloat const kContainViewYNormal = 70.0;
     self.passwordField.leftViewMode = UITextFieldViewModeAlways;
     [self.containView addSubview:self.passwordField];
     
+    self.mailboxField = [[MyTextField alloc]init];
+    self.mailboxField.textColor = [UIColor blackColor];
+    self.mailboxField.font = [UIFont systemFontOfSize:14];
+    self.mailboxField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"请输入邮箱"        attributes:@{NSForegroundColorAttributeName:[UIColor colorWithWhite:0.6 alpha:1.000],
+                                                                                                                       NSFontAttributeName:[UIFont italicSystemFontOfSize:14]}];
+//    self.mailboxField.secureTextEntry = YES;
+    self.mailboxField.keyboardType = UIKeyboardTypeASCIICapable;
+    self.mailboxField.returnKeyType = UIReturnKeyGo;
+    self.mailboxField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    self.mailboxField.autocorrectionType = UITextAutocorrectionTypeNo;
+    self.mailboxField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    self.mailboxField.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.mailboxField.rightViewMode = UITextFieldViewModeWhileEditing;
+    self.leftMailBoxView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"password_icon"]];
+    self.mailboxField.leftView = self.leftMailBoxView;
+    self.mailboxField.leftViewMode = UITextFieldViewModeAlways;
+    [self.containView addSubview:self.mailboxField];
+    
     self.registeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.registeButton setTitle:@"注册" forState:UIControlStateNormal];
     self.registeButton.layer.cornerRadius = 5.0f;
@@ -419,6 +467,7 @@ static CGFloat const kContainViewYNormal = 70.0;
 {
     [self.usernameField resignFirstResponder];
     [self.passwordField resignFirstResponder];
+     [self.mailboxField resignFirstResponder];
     [self.verifyCodeField resignFirstResponder];
 
 }
