@@ -22,6 +22,7 @@
 #import "CSEncrytionController.h"
 #import "DHGuidePageHUD.h"
 #import "EmergencyViewController.h"
+#import "UnfreezeViewController.h"
 
 static CGFloat const kContainViewYNormal = 70.0;
 @interface LoginViewController ()<UITextFieldDelegate>
@@ -159,12 +160,8 @@ static CGFloat const kContainViewYNormal = 70.0;
                         self.passwordField.text = [userDefaults valueForKey:@"userPassword"];
                         [self login];
                     }
-                   
                 });
-                
             }
-
-            
         }];
     } else {
         
@@ -478,32 +475,30 @@ static CGFloat const kContainViewYNormal = 70.0;
             [self presentViewController:alert animated:YES completion:nil];
         }else
         {
-            self.HUD = [[MBProgressHUD alloc] initWithView:self.view];
-            self.HUD.removeFromSuperViewOnHide = YES;
-            [self.view addSubview:self.HUD];
-            [self.HUD showAnimated:YES];
+#pragma mark- 缓冲HUD定义与初始化原始位置
+        
             
-            NSNumber *isLogin = [userDefaults objectForKey:ISLOGIN];
-            if (isLogin.boolValue) {
-                NSString *password = [userDefaults objectForKey:@"userPassword"];
-                if ([password isEqualToString:self.passwordField.text]) {
-                    
-                    //获取storyboard: 通过bundle根据storyboard的名字来获取我们的storyboard,
-                    UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
-                    //由storyboard根据myView的storyBoardID来获取我们要切换的视图
-                    UIViewController *homeController = [story instantiateViewControllerWithIdentifier:@"HomeTabBar"];
-                    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-                    appDelegate.window.rootViewController = homeController;
-                    
-                }else{
-                    self.HUD.mode = MBProgressHUDModeCustomView;
-                    self.HUD.label.text = @"用户名或密码错误！";
-                    [self.HUD hideAnimated:YES afterDelay:0.6];
-
-                }
-
-            }else{
-                
+//            NSNumber *isLogin = [userDefaults objectForKey:ISLOGIN];
+//            if (isLogin.boolValue) {
+//                NSString *password = [userDefaults objectForKey:@"userPassword"];
+//                if ([password isEqualToString:self.passwordField.text]) {
+//
+//                    //获取storyboard: 通过bundle根据storyboard的名字来获取我们的storyboard,
+//                    UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
+//                    //由storyboard根据myView的storyBoardID来获取我们要切换的视图
+//                    UIViewController *homeController = [story instantiateViewControllerWithIdentifier:@"HomeTabBar"];
+//                    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+//                    appDelegate.window.rootViewController = homeController;
+//
+//                }else{
+//                    self.HUD.mode = MBProgressHUDModeCustomView;
+//                    self.HUD.label.text = @"用户名或密码错误！";
+//                    [self.HUD hideAnimated:YES afterDelay:0.6];
+//
+//                }
+//
+//            }else{
+        
                 NSDictionary *parameters =@{
                                                 @"emp_phone":self.usernameField.text,
                                                 @"emp_password":self.passwordField.text
@@ -515,17 +510,28 @@ static CGFloat const kContainViewYNormal = 70.0;
                     if ([status isEqualToString:@"Success"])
                     {
                         if ([content isEqualToString:@"phonenull"]) {
-                            self.HUD.mode = MBProgressHUDModeCustomView;
-                            self.HUD.label.text = @"用户不存在！";
-                            [self.HUD hideAnimated:YES afterDelay:0.6];
+#pragma mark- 缓冲HUD定义与初始化更改后位置
+                            [self showSuccess:@"用户不存在!"];
+//                            self.HUD = [[MBProgressHUD alloc] initWithView:self.view];
+//                            self.HUD.removeFromSuperViewOnHide = YES;
+//                            [self.view addSubview:self.HUD];
+//                            [self.HUD showAnimated:YES];
+//                            self.HUD.mode = MBProgressHUDModeCustomView;
+//                            self.HUD.label.text = @"用户不存在！";
+//                            [self.HUD hideAnimated:YES afterDelay:0.6];
                         }
                         else if ([content isEqualToString:@"passworderror"])
                         {
-                            self.HUD.mode = MBProgressHUDModeCustomView;
-                            self.HUD.label.text = @"用户名或密码错误！";
-                            [self.HUD hideAnimated:YES afterDelay:0.6];
-                        }else
-                        {
+                              [self showSuccess:@"用户名或密码错误！"];
+//                            self.HUD.mode = MBProgressHUDModeCustomView;
+//                            self.HUD.label.text = @"用户名或密码错误！";
+//                            [self.HUD hideAnimated:YES afterDelay:0.6];
+                        }else if([content isEqualToString:@"freezing"])
+                            {
+                            [self goUnfreeze];
+                            [userDefaults setObject:self.usernameField.text forKey:@"userName"];
+                            [userDefaults setObject:self.passwordField.text forKey:@"userPassword"];
+                            }else{
                             //授权访问通讯录
                             [self getContactsAuthorization];
                             //登录成功，保存identity，解密数据库文件
@@ -566,25 +572,47 @@ static CGFloat const kContainViewYNormal = 70.0;
                     }else
                     {
                         NSLog(@"Fail 服务器内部出错，content无内容");
-                        [self.HUD hideAnimated:YES afterDelay:0.6];
+//                        [self.HUD hideAnimated:YES afterDelay:0.6];
+                    [self showSuccess:@"网络连接出错！"];
                     }
                     
                 } failure:^(NSURLSessionDataTask * _Nonnull task, NSError * _Nonnull error) {
-                    
+                    [self showSuccess:@"无网络连接！"];
                     NSLog(@"网络请求失败：%@",error);
-                    self.HUD.label.text = @"无网络连接！";
-                    [self.HUD hideAnimated:YES afterDelay:0.6];
+                    
+//                    self.HUD.label.text = @"无网络连接！";
+//                    [self.HUD hideAnimated:YES afterDelay:0.6];
                     //[self offlineLogin];
                 }];
                 
 
-            }
+//            }
             
            
         }
     }
    
 }
+
+#pragma mark - 缓冲
+-(void)showSuccess:(NSString *)success
+{
+    self.HUD = [[MBProgressHUD alloc] initWithView:self.view];
+    self.HUD.removeFromSuperViewOnHide = YES;
+    [self.view addSubview:self.HUD];
+    [self.HUD showAnimated:YES];
+    self.HUD.mode = MBProgressHUDModeCustomView;
+    self.HUD.label.text = success;
+    [self.HUD hideAnimated:YES afterDelay:0.6];
+}
+
+#pragma mark-解冻
+-(void)goUnfreeze
+{
+    UnfreezeViewController *unfreezeVC = [[UnfreezeViewController alloc]init];
+    [self.navigationController pushViewController:unfreezeVC animated:YES];
+}
+
 //无网络连接情况下
 - (void)offlineLogin
 {

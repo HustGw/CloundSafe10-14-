@@ -10,11 +10,11 @@
 
 static CGFloat const kContainViewYNormal = 70.0;
 @interface EmergencyViewController ()
-@property (nonatomic,strong)MyTextField *usernameField;
-@property (nonatomic,strong)MyTextField *passwordField;
+@property (nonatomic, strong)MyTextField *usernameField;
+@property (nonatomic, strong)MyTextField *passwordField;
 @property (nonatomic, strong) UIImageView   *leftUsernameView;
 @property (nonatomic, strong) UIImageView   *leftPasswdView;
-@property (nonatomic,strong)UIButton *IsEmergencyButton;
+@property (nonatomic, strong) UIButton  *IsEmergencyButton;
 @property (nonatomic, strong) UIView      *containView;
 @property (nonatomic, assign) BOOL          isKeyboardShowing;
 @property (nonatomic, assign) BOOL          isLogining;

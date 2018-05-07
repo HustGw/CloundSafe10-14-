@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2703AD03209DE3E20014A1A1 /* UnfreezeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2703AD02209DE3E20014A1A1 /* UnfreezeViewController.m */; };
 		2705551C209DA5F800A069ED /* EmergencyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2705551B209DA5F800A069ED /* EmergencyViewController.m */; };
+		2726F4F920A03384001A2205 /* EnsureUnfreezeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2726F4F820A03384001A2205 /* EnsureUnfreezeViewController.m */; };
 		27C0BB43207C94DF00E39FD1 /* guideImage1.png in Resources */ = {isa = PBXBuildFile; fileRef = 27C0BB3F207C94DF00E39FD1 /* guideImage1.png */; };
 		27C0BB44207C94DF00E39FD1 /* guideImage2.png in Resources */ = {isa = PBXBuildFile; fileRef = 27C0BB40207C94DF00E39FD1 /* guideImage2.png */; };
 		27C0BB45207C94DF00E39FD1 /* guideImage4.png in Resources */ = {isa = PBXBuildFile; fileRef = 27C0BB41207C94DF00E39FD1 /* guideImage4.png */; };
@@ -273,6 +274,8 @@
 		2703AD02209DE3E20014A1A1 /* UnfreezeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UnfreezeViewController.m; sourceTree = "<group>"; };
 		2705551A209DA5F800A069ED /* EmergencyViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmergencyViewController.h; sourceTree = "<group>"; };
 		2705551B209DA5F800A069ED /* EmergencyViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EmergencyViewController.m; sourceTree = "<group>"; };
+		2726F4F720A03384001A2205 /* EnsureUnfreezeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EnsureUnfreezeViewController.h; sourceTree = "<group>"; };
+		2726F4F820A03384001A2205 /* EnsureUnfreezeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EnsureUnfreezeViewController.m; sourceTree = "<group>"; };
 		27C0BB3F207C94DF00E39FD1 /* guideImage1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guideImage1.png; sourceTree = "<group>"; };
 		27C0BB40207C94DF00E39FD1 /* guideImage2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guideImage2.png; sourceTree = "<group>"; };
 		27C0BB41207C94DF00E39FD1 /* guideImage4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guideImage4.png; sourceTree = "<group>"; };
@@ -963,6 +966,8 @@
 				2705551B209DA5F800A069ED /* EmergencyViewController.m */,
 				2703AD01209DE3E20014A1A1 /* UnfreezeViewController.h */,
 				2703AD02209DE3E20014A1A1 /* UnfreezeViewController.m */,
+				2726F4F720A03384001A2205 /* EnsureUnfreezeViewController.h */,
+				2726F4F820A03384001A2205 /* EnsureUnfreezeViewController.m */,
 				C482C6C61F8E54E800CA57B9 /* Images */,
 			);
 			path = Login;
@@ -1781,6 +1786,7 @@
 				E77FE22A1D8E7A0E002F8D47 /* ChangePasswordViewController.m in Sources */,
 				E77CB13F1D4F418500794905 /* CSMyInfoController.m in Sources */,
 				E719FFFD1DA9DD1D00411E87 /* CSSearchResultsController.m in Sources */,
+				2726F4F920A03384001A2205 /* EnsureUnfreezeViewController.m in Sources */,
 				95DF31DE1D2A78CC006A4EF8 /* FICImageTable.m in Sources */,
 				E77F58971D98E29D002C4B55 /* UIImage+MultiFormat.m in Sources */,
 				95E1F1F11D1ED139008C12B7 /* MJRefreshBackNormalFooter.m in Sources */,
