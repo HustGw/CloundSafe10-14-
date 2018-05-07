@@ -69,7 +69,7 @@
         make.left.right.bottom.equalTo(self.view);
     }];
     self.imageView.image = self.image;
-    /*
+    
     UIView *bottomToolBar = [[UIView alloc] initWithFrame:CGRectMake(0, kScreenHeight - 50, kScreenWidth, 50)];
     CGFloat rgb = 253 / 255.0;
     bottomToolBar.backgroundColor = [UIColor colorWithRed:rgb green:rgb blue:rgb alpha:1.0];
@@ -102,7 +102,8 @@
     
     [bottomToolBar addSubview:divide];
     [bottomToolBar addSubview:decrytionBtn];
-     */
+    
+    /*
     self.decrytionBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height-50, self.view.frame.size.width*0.60, 50)];
     self.decrytionBtn.enabled = NO;
     CAGradientLayer *gradientLayer = [CAGradientLayer layer];
@@ -127,6 +128,7 @@
     [self.shareBtn addTarget:self action:@selector(shareContent:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.shareBtn];
    // [self.navigationController.navigationBar.layer addSublayer:gradientLayer];
+     */
     
 }
 #pragma mark - 共享

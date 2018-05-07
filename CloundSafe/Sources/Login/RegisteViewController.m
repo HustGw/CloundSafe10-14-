@@ -204,7 +204,7 @@ static CGFloat const kContainViewYNormal = 70.0;
         if ([[responseObject valueForKey:@"status"] isEqualToString:@"Fail"])
         {
             [self alert:@"服务器响应失败！" ];
-        }else
+        }else 
         {
             NSString *content = [responseObject valueForKey:@"content"];
             if ([content isEqualToString:@"code error"])
