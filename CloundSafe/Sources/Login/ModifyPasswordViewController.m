@@ -49,14 +49,6 @@
                         [self alert:@"验证码失效！"];
                         }else
                             {
-//                            [self alert:@"验证码输入正确！"];
-//                            dispatch_queue_t queue2 = dispatch_queue_create("queue", NULL);
-//                            dispatch_async(queue2, ^{
-//                                NSLog(@"子线程");
-//
-//                            });
-//                            NSLog(@"主线程");
-//                            NSLog(@"验证码输入正确");
                             [self sendRsetPassword];
                             }
                 }

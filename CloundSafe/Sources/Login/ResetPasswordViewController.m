@@ -118,9 +118,9 @@
 {
     [userDefaults synchronize];
     NSString *username = [userDefaults valueForKey:@"userName"];
-    NSLog(@"%@________username",username);
     NSDictionary *parameters = [[NSDictionary alloc]initWithObjectsAndKeys:username,@"emp_phone",self.verifyCodeField.text,@"code",nil];
     
+
             NSString *url = VerifyEmployeURL;
             
             [[AFHTTPSessionManager manager] POST:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
@@ -128,9 +128,11 @@
                 if ([[responseObject valueForKey:@"status"] isEqualToString:@"Fail"])
                     {
                     [self alert:@"服务器响应失败！" ];
+                    NSLog(@"content have nothing");
                     }else
                         {
                         NSString *content = [responseObject valueForKey:@"content"];
+                        NSLog(@"the content is %@",content);
                         if ([content isEqualToString:@"code error"])
                             {
                             [self alert:@"验证码错误！"];
@@ -139,78 +141,55 @@
                                 [self alert:@"验证码失效！"];
                                 }else//注册成功
                                     {
-                                    [self alert:@"修改成功！"];
-                                    
+                                    NSString *userIdentity = content;
+                                    [self sendRsetPassword:userIdentity];
                                     }
                         }
             } failure:^(NSURLSessionDataTask * _Nonnull task, NSError * _Nonnull error) {
                 NSLog(@"网络请求失败：%@",error);
                 [self alert:@"无网络连接！"];
             }];
-//    NSDictionary *parameters = [[NSDictionary alloc]initWithObjectsAndKeys:self.usernameField.text,@"emp_phone",self.verifyCodeField.text,@"code", nil];
-//    NSString *url = VerifyEmployeURL;
-//    [[AFHTTPSessionManager manager]POST:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
-//        NSString *status = [responseObject valueForKey:@"status"];
-//        if ([status isEqualToString:@"Fail"]) {
-//            [self alert:@"服务器响应失败"];
-//        } else
-//            {
-//            NSString *content = [responseObject valueForKey:@"content"];
-//            if ([content isEqualToString:@"code error"]) {
-//                [self alert:@"验证码错误"];
-//            } else if([content isEqualToString:@"code invalid"]){
-//                [self alert:@"验证码失效"];
-//            }else
-//                {
-//                userIdentity = content;
-//                NSLog(@"%@",userIdentity);
-//                }
-//            }
-//    } failure:^(NSURLSessionDataTask * _Nonnull task, NSError * _Nonnull error) {
-//                NSLog(@"网络请求失败：%@",error);
-//                [self alert:@"无网络连接！"];
-//                NSLog(@"身份验证无网络连接2");
-//    }];
+
 }
 
 #pragma mark 修改密码
 
-//-(void)sendRsetPassword:(NSString *)userIdentify
-//{
-//    NSDictionary *parametersother = [[NSDictionary alloc]initWithObjectsAndKeys:self.passwordField.text,@"emp_password",userIdentify,@"user_identify", nil];
-//                                    NSString *urlother = SubmitePasswordURL;
-//
-//                                    [[AFHTTPSessionManager manager] POST:urlother parameters:parametersother success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
-//                                        NSString *statusother = [responseObject valueForKey:@"status"];
-//                                        if ([statusother isEqualToString:@"Fail"])
-//                                            {
-//                                            [self alert:@"服务器响应失败！" ];
-//                                            NSLog(@"修改密码服务器错误");
-//                                            }
-//                                        else
-//                                            {
-//                                            NSString *contentother = [responseObject valueForKey:@"content"];
-//                                            if ([contentother isEqualToString:@"employee is null"])
-//                                                {
-//                                                [self alert:@"用户为空！"];
-//                                                }else{
-//                                                        //更新密码
-//                                                    [userDefaults setObject:self.passwordField.text forKey:@"userPassword"];
-//                                                    dispatch_async(dispatch_get_main_queue(), ^{
-//                                                        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"修改成功，请牢记新密码！" preferredStyle:UIAlertControllerStyleAlert];
-//                                                        UIAlertAction *action = [UIAlertAction actionWithTitle:@"我知道了" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-//                                                            [self.navigationController popViewControllerAnimated:YES];
-//                                                        }];
-//                                                        [alert addAction:action];
-//                                                        [self presentViewController:alert animated:YES completion:nil];
-//                                                    });
-//                                                    }
-//                                            }
-//                                    } failure:^(NSURLSessionDataTask * _Nonnull task, NSError * _Nonnull error) {
-//                                        NSLog(@"网络请求失败：%@",error);
-//                                        [self alert:@"无网络连接！"];
-//                                    }];
-//}
+-(void)sendRsetPassword:(NSString *)userIdentify
+{
+    NSDictionary *parametersother = [[NSDictionary alloc]initWithObjectsAndKeys:self.passwordField.text,@"emp_password",userIdentify,@"user_identify", nil];
+                                    NSString *urlother = SubmitePasswordURL;
+
+                                    [[AFHTTPSessionManager manager] POST:urlother parameters:parametersother success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+                                        NSString *statusother = [responseObject valueForKey:@"status"];
+                                        if ([statusother isEqualToString:@"Fail"])
+                                            {
+                                            [self alert:@"服务器响应失败！" ];
+                                            NSLog(@"修改密码服务器错误");
+                                            }
+                                        else
+                                            {
+                                            NSString *contentother = [responseObject valueForKey:@"content"];
+                                            if ([contentother isEqualToString:@"employee is null"])
+                                                {
+                                                [self alert:@"用户为空！"];
+                                                }else{
+                                                        //更新密码
+                                                    [userDefaults setObject:self.passwordField.text forKey:@"userPassword"];
+                                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                                        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"修改成功，请牢记新密码！" preferredStyle:UIAlertControllerStyleAlert];
+                                                        UIAlertAction *action = [UIAlertAction actionWithTitle:@"我知道了" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+                                                            [self.navigationController popViewControllerAnimated:YES];
+                                                        }];
+                                                        [alert addAction:action];
+                                                        [self presentViewController:alert animated:YES completion:nil];
+                                                    });
+                                                    }
+                                            }
+                                    } failure:^(NSURLSessionDataTask * _Nonnull task, NSError * _Nonnull error) {
+                                        NSLog(@"网络请求失败：%@",error);
+                                        [self alert:@"无网络连接！"];
+                                    }];
+}
 
 #pragma mark - 发送验证码按钮
 -(void)sendVerifyCode

@@ -200,6 +200,7 @@ static CGFloat const kContainViewYNormal = 70.0;
         } failure:^(NSURLSessionDataTask * _Nonnull task, NSError * _Nonnull error) {
             NSLog(@"网络请求失败：%@",error);
             [self alert:@"无网络连接！"];
+            NSLog(@"验证账号的时候网络出现无连接");
         }];
 
 
@@ -219,13 +220,12 @@ static CGFloat const kContainViewYNormal = 70.0;
         }else
   {
     NSString *url = RegisterURL;
-
     [[AFHTTPSessionManager manager] POST:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
         
         if ([[responseObject valueForKey:@"status"] isEqualToString:@"Fail"])
         {
             [self alert:@"服务器响应失败！" ];
-        }else 
+        }else if ([[responseObject valueForKey:@"status"] isEqualToString:@"Success"])
         {
             NSString *content = [responseObject valueForKey:@"content"];
             if ([content isEqualToString:@"code error"])
@@ -247,6 +247,7 @@ static CGFloat const kContainViewYNormal = 70.0;
     } failure:^(NSURLSessionDataTask * _Nonnull task, NSError * _Nonnull error) {
         NSLog(@"网络请求失败：%@",error);
         [self alert:@"无网络连接！"];
+        NSLog(@"验证注册的时候网络出现无连接");
     }];
   }
 
