@@ -50,12 +50,14 @@ typedef NS_ENUM(NSInteger, ContactCellType)
 #define AcquireCodeURL      @"http://119.23.162.138/cloud/AcquireCode.do"
 #define JudgePhoneURL       @"http://119.23.162.138/cloud/Employee/Judge_Phone.do"
 #define ResetPasswordURL    @"http://119.23.162.138/cloud/ResetPassword/RestPasswordByCode.do"
+#define VerifyEmployeURL    @"http://119.23.162.138/cloud/ResetPassword/VerifyEmployee.do"
 #define DownLoadKeyURL      @"http://119.23.162.138/cloud/File/DownLoadFile.do"
 #define UpLoadKeyURL        @"http://119.23.162.138/cloud/File/UpLoadFile.do"
 #define LogoutURL           @"http://119.23.162.138/cloud/Employee/Logout.do"
 #define FreezeURL           @"http://119.23.162.138/cloud/Employee/Freeze.do"
 #define AcquireEmailcodeURL @"http://119.23.162.138/cloud/AcquireEmailCode.do"
 #define UnfreezeURL         @"http://119.23.162.138/cloud/Employee/UnFreeze.do"
+#define SubmitePasswordURL  @"http://119.23.162.138/cloud/ResetPassword/submitePassword.do"
 
 #define DBFILE_NAME @"contact.sqlite3"
 

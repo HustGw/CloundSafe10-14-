@@ -32,4 +32,19 @@ typedef void(^CheckPhoneBlock)(BOOL isRegister);
 @property (nonatomic,retain) UITextField* UseforForget1;
 @property (nonatomic, copy) NSString *number;
 
+- (void)viewDidLoad;
+- (void)checkPhone;
+-(void)sendVerifyCode;
+- (void)resetButton;
+-(void)checkUserIdentify:(BOOL) isRequestCode;
+-(void)viewWillLayoutSubviews;
+- (void)textFieldDidEndEditing:(UITextField *)textField;
+- (void)textFieldDidBeginEditing:(UITextField *)textField;
+-(void)configureViews;
+- (void)configureTextField;
+- (void)alert:(NSString *)msg;
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event;
+- (void)regBackToForwardViewController;
+-(void)sendVerifyEmploye;
+-(void)sendRsetPassword;
 @end

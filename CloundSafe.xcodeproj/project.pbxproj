@@ -10,6 +10,7 @@
 		2703AD03209DE3E20014A1A1 /* UnfreezeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2703AD02209DE3E20014A1A1 /* UnfreezeViewController.m */; };
 		2705551C209DA5F800A069ED /* EmergencyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2705551B209DA5F800A069ED /* EmergencyViewController.m */; };
 		2726F4F920A03384001A2205 /* EnsureUnfreezeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2726F4F820A03384001A2205 /* EnsureUnfreezeViewController.m */; };
+		2726F4FC20A059EA001A2205 /* ModifyPasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2726F4FB20A059EA001A2205 /* ModifyPasswordViewController.m */; };
 		27C0BB43207C94DF00E39FD1 /* guideImage1.png in Resources */ = {isa = PBXBuildFile; fileRef = 27C0BB3F207C94DF00E39FD1 /* guideImage1.png */; };
 		27C0BB44207C94DF00E39FD1 /* guideImage2.png in Resources */ = {isa = PBXBuildFile; fileRef = 27C0BB40207C94DF00E39FD1 /* guideImage2.png */; };
 		27C0BB45207C94DF00E39FD1 /* guideImage4.png in Resources */ = {isa = PBXBuildFile; fileRef = 27C0BB41207C94DF00E39FD1 /* guideImage4.png */; };
@@ -276,6 +277,8 @@
 		2705551B209DA5F800A069ED /* EmergencyViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EmergencyViewController.m; sourceTree = "<group>"; };
 		2726F4F720A03384001A2205 /* EnsureUnfreezeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EnsureUnfreezeViewController.h; sourceTree = "<group>"; };
 		2726F4F820A03384001A2205 /* EnsureUnfreezeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EnsureUnfreezeViewController.m; sourceTree = "<group>"; };
+		2726F4FA20A059EA001A2205 /* ModifyPasswordViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ModifyPasswordViewController.h; sourceTree = "<group>"; };
+		2726F4FB20A059EA001A2205 /* ModifyPasswordViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ModifyPasswordViewController.m; sourceTree = "<group>"; };
 		27C0BB3F207C94DF00E39FD1 /* guideImage1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guideImage1.png; sourceTree = "<group>"; };
 		27C0BB40207C94DF00E39FD1 /* guideImage2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guideImage2.png; sourceTree = "<group>"; };
 		27C0BB41207C94DF00E39FD1 /* guideImage4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guideImage4.png; sourceTree = "<group>"; };
@@ -960,6 +963,8 @@
 				95E1F20D1D1EDD95008C12B7 /* UINavigationBar+Awesome.m */,
 				95E1F1FE1D1ED1A3008C12B7 /* ResetPasswordViewController.h */,
 				95E1F1FF1D1ED1A3008C12B7 /* ResetPasswordViewController.m */,
+				2726F4FA20A059EA001A2205 /* ModifyPasswordViewController.h */,
+				2726F4FB20A059EA001A2205 /* ModifyPasswordViewController.m */,
 				E73A5C231DD8689700B42350 /* OffLinePhoneBookController.h */,
 				E73A5C241DD8689700B42350 /* OffLinePhoneBookController.m */,
 				2705551A209DA5F800A069ED /* EmergencyViewController.h */,
@@ -1831,6 +1836,7 @@
 				E79B1EDD1F14FFAC0002A7AC /* CSDecryptionImageViewController.m in Sources */,
 				E7F9C7371D54C1530074689D /* AFSecurityPolicy.m in Sources */,
 				95E1F1F71D1ED139008C12B7 /* MJRefreshConst.m in Sources */,
+				2726F4FC20A059EA001A2205 /* ModifyPasswordViewController.m in Sources */,
 				C482C6D31F8E591C00CA57B9 /* DHGifImageOperation.m in Sources */,
 				E7CFA3971D499CCB00C6DB62 /* LICENSE.md in Sources */,
 				78130B641F29EA7C00CE7EC3 /* CSEncryptionImageViewController.m in Sources */,

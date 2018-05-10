@@ -23,6 +23,7 @@
 #import "DHGuidePageHUD.h"
 #import "EmergencyViewController.h"
 #import "UnfreezeViewController.h"
+#import "ModifyPasswordViewController.h"
 
 static CGFloat const kContainViewYNormal = 70.0;
 @interface LoginViewController ()<UITextFieldDelegate>
@@ -664,9 +665,9 @@ static CGFloat const kContainViewYNormal = 70.0;
 -(void)goResetPwd{
     NSLog(@"Lisa the uesernameFieldLogin.text=%@",self.usernameField.text);
     self.UseforForget.text=self.usernameField.text;
-    ResetPasswordViewController *resetViewController = [[ResetPasswordViewController alloc]init];
-    resetViewController.UseforForget1=self.UseforForget;
-    [self.navigationController pushViewController:resetViewController animated:YES];
+    ModifyPasswordViewController *ModifyViewController = [[ModifyPasswordViewController alloc]init];
+    ModifyViewController.UseforForget1=self.UseforForget;
+    [self.navigationController pushViewController:ModifyViewController animated:YES];
 }
 #pragma mark - 返回上一界面
 - (void)logBackToMyInfoViewController
