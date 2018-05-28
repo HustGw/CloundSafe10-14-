@@ -21,6 +21,7 @@
 #import "CSGestureResultViewController.h"
 #import "CSGestureViewController.h"
 #import "AFNetworking.h"
+#import "PersonalTableViewController.h"
 
 static BOOL RemberUsername;
 @interface CSMyInfoController ()<UITableViewDelegate, UITableViewDataSource,MWPhotoBrowserDelegate ,UIAlertViewDelegate,UIGestureRecognizerDelegate,UIImagePickerControllerDelegate,UINavigationBarDelegate>
@@ -31,7 +32,8 @@ static BOOL RemberUsername;
 @property (nonatomic, strong) NSArray *photos;
 @property (nonatomic, strong) NSMutableArray *selections;
 @property (nonatomic, strong) UIImageView *my_photobackground;
-
+@property (nonatomic, strong) UIImageView *install;
+@property (nonatomic, strong) NSDictionary *diction01;
 @end
 @implementation CSMyInfoController
 - (void)viewDidLoad
@@ -77,8 +79,16 @@ static BOOL RemberUsername;
     UITapGestureRecognizer *top = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(touchesBegan: withEvent:)];
     self.my_photobackground.userInteractionEnabled = YES;
     [self.my_photobackground addGestureRecognizer:top];
-    [self.view addSubview:[[UIView alloc]initWithFrame:CGRectZero]];
+//    [self.view addSubview:[[UIView alloc]initWithFrame:CGRectZero]];
+    self.install = [[UIImageView alloc]initWithFrame:CGRectMake(kScreenWidth-30, 130, 30, 30)];
+    UIImage *setup = [UIImage imageNamed:@"login_xuanzhekuang_sel"];
+    [self.install setImage:setup];
+    [self.view addSubview:self.install];
+    UITapGestureRecognizer *top1 = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(setupVC)];
+    self.install.userInteractionEnabled = YES;
+    [self.install addGestureRecognizer:top1];
     self.tableView = [[UITableView alloc]initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+//    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 160, kScreenWidth, kScreenHeight-130-49) style:UITableViewStyleGrouped];
     self.tableView.estimatedSectionHeaderHeight = 0;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
@@ -111,6 +121,50 @@ static BOOL RemberUsername;
     [actionSheet addAction:action02];
     [self presentViewController:actionSheet animated:YES completion:nil];
     }
+}
+
+-(void)setupVC
+{
+    NSString *useridentify = [userDefaults valueForKey:@"userIdentify"];
+    NSDictionary *parameters = @{@"user_identify":useridentify};
+    [[AFHTTPSessionManager manager] GET:GetuserInfoURL parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+        NSString *status = [responseObject valueForKey:@"status"];
+        NSString *content  = [responseObject valueForKey:@"content"];
+        if ([status isEqualToString:@"Success"]) {
+            if ([content isEqualToString:@"employee is null"]) {
+                NSLog(@"用户不存在");
+            }else
+                {
+                NSLog(@"%@",content);
+                self.diction01 = [CSMyInfoController dictionaryWithJsonString:content];
+                NSLog(@"diction is %@",self.diction01);
+                PersonalTableViewController *PersonalVC = [[PersonalTableViewController alloc]initwithdic:self.diction01];
+                [self.navigationController pushViewController:PersonalVC animated:YES];
+                }
+        }
+    } failure:^(NSURLSessionDataTask * _Nonnull task, NSError * _Nonnull error) {
+        NSLog(@"the inquriy user information error is %@",error);
+    }];
+    
+}
+
++ (NSDictionary *)dictionaryWithJsonString:(NSString *)jsonString
+{
+    if (jsonString == nil) {
+        return nil;
+    }
+    
+    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *err;
+    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                        options:NSJSONReadingMutableContainers
+                                                          error:&err];
+    if(err)
+        {
+        NSLog(@"json解析失败：%@",err);
+        return nil;
+        }
+    return dic;
 }
 
 - (void)addAction:(UIAlertAction *)action
@@ -162,12 +216,17 @@ static BOOL RemberUsername;
     NSString *fullPath = [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] stringByAppendingPathComponent:@"currentImage.png"];
     UIImage *savedImage = [[UIImage alloc] initWithContentsOfFile:fullPath];
     
-    
     [self.my_photobackground setImage:savedImage];//图片赋值显示
     
         //进到次方法时 调 UploadImage 方法上传服务端
-        //    NSDictionary *dic = @{@"image":fullPath};
-        //    [self UploadImage:dic];
+    NSString *useridentify = [userDefaults valueForKey:@"userIdentify"];
+    NSLog(@"useridentify is %@",useridentify);
+    NSLog(@"fullPath is %@",fullPath);
+//    NSDictionary *dic = @{@"user_identify":useridentify,@"file":fullPath};
+    NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
+    [dic setObject:useridentify forKey:@"user_identify"];
+    [dic setObject:fullPath forKey:@"file"];
+    [self UploadImage:dic];
 }
 
 #pragma mark - 保存图片至沙盒（应该是提交后再保存到沙盒,下次直接去沙盒取）
@@ -183,42 +242,48 @@ static BOOL RemberUsername;
     [imageData writeToFile:fullPath atomically:NO];
 }
 
+//图频上传
 
-    //图频上传
-
--(void)UploadImage:(NSDictionary *)dic
+-(void)UploadImage:(NSMutableDictionary *)dic
 {
-    
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
         //网址
-    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/plain"];
-    
-    [manager POST:@"http://112.74.67.161:8080/foodOrder/service/file/upload.do" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-            //01.21 测试
-        NSString * imgpath = [NSString stringWithFormat:@"%@",dic[@"image"]];
-        
+//    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/plain"];
+    manager.requestSerializer = [[AFJSONRequestSerializer alloc]init];
+    NSString *EmpImage = SubmiteImage;
+    [manager POST:EmpImage parameters:dic constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        NSString * imgpath = [NSString stringWithFormat:@"%@",dic[@"file"]];
+        NSLog(@"imgpath is %@",imgpath);
         UIImage *image = [UIImage imageWithContentsOfFile:imgpath];
         NSData *data = UIImageJPEGRepresentation(image,0.7);
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
         formatter.dateFormat = @"yyyyMMddHHmmss";
         NSString *str = [formatter stringFromDate:[NSDate date]];
         NSString *fileName = [NSString stringWithFormat:@"%@.jpg", str];
-        
-        [formData appendPartWithFileData:data name:@"Filedata" fileName:fileName mimeType:@"image/jpg"];
-        
-    } success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        
-            //成功 后处理。
-        NSLog(@"Success: %@", responseObject);
-        NSString * str = [responseObject objectForKey:@"fileId"];
-        if (str != nil) {
-                //            [self.delegate uploadImgFinish:str];
-        }
-        
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            //失败
-        NSLog(@"Error: %@", error);
+      [formData appendPartWithFileData:[NSData dataWithContentsOfFile:imgpath] name:@"file" fileName:imgpath mimeType:@"file"];
+        NSLog(@"fileName is %@",fileName);
+        NSLog(@"formData is %@",formData);
+    } success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+        NSString *status = [responseObject valueForKey:@"status"];
+        NSString *content = [responseObject valueForKey:@"content"];
+        if([status isEqualToString:@"Success"])
+            {
+            if ([content isEqualToString:@"employee is null"]) {
+                NSLog(@"employee is null");
+            }else if([content isEqualToString:@"file is null"])
+                {
+                NSLog(@"file is null");
+                }else{
+                    NSLog(@"URL is %@",content);
+                }
+            }else
+                {
+                NSLog(@"status is fail");
+                }
+    } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+        NSLog(@"上传失败:%@",error);
     }];
+//        [formData appendPartWithFileData:data name:@"Filedata" fileName:fileName mimeType:@"image/jpg"];
 }
 
 #pragma mark - tableView delegate
@@ -238,7 +303,7 @@ static BOOL RemberUsername;
         }else
             if(section == 1)
                 {
-                return 3;
+                return 2;
                 }else
                     {
                     return 1;
@@ -287,15 +352,11 @@ static BOOL RemberUsername;
                 cell.textLabel.text = @"关于我们";
                 cell.imageView.image = [UIImage imageNamed:@"aboutus"];
                 
-                }else if (indexPath.row == 1)
+                }else
                     {
                     cell.textLabel.text = @"使用指南";
                     cell.imageView.image = [UIImage imageNamed:@"useguides"];
-                    }else
-                        {
-                        cell.textLabel.text = @"修改密码";
-                        cell.imageView.image = [UIImage imageNamed:@"pen"];
-                        }
+                    }
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             }else
                 {
@@ -314,7 +375,7 @@ static BOOL RemberUsername;
 
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
-    return 1;
+    return 0;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
@@ -322,12 +383,12 @@ static BOOL RemberUsername;
     return 0;
 }
 
--(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
-{
-    UIView *view = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 10)];
-    view.backgroundColor = [UIColor clearColor];
-    return view;
-}
+//-(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+//{
+//    UIView *view = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 10)];
+//    view.backgroundColor = [UIColor clearColor];
+//    return view;
+//}
 
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
@@ -385,15 +446,10 @@ static BOOL RemberUsername;
                 CSAboutusController *aboutus = [[CSAboutusController alloc]init];
                 [self.navigationController pushViewController:aboutus animated:YES];
                 
-                }else if(indexPath.row == 1)
-                    {
+                }else{
                     CSUseguideAllViewController *useguides = [[CSUseguideAllViewController alloc]init];
                     [self.navigationController pushViewController:useguides animated:YES];
-                    }else
-                        {
-                        ChangePasswordViewController *resetPassword = [[ChangePasswordViewController alloc]init];
-                        [self.navigationController pushViewController:resetPassword animated:YES];
-                        }
+                    }
             }else
                 {
                 UIAlertView *alertView = [[UIAlertView alloc]
@@ -523,10 +579,7 @@ static BOOL RemberUsername;
         return nil;
     }
 }
-//-(void)useguide
-//{
-//    
-//}
+
 - (void)logout
 {
 

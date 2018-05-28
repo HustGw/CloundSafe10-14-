@@ -58,6 +58,10 @@ typedef NS_ENUM(NSInteger, ContactCellType)
 #define AcquireEmailcodeURL @"http://119.23.162.138/cloud/AcquireEmailCode.do"
 #define UnfreezeURL         @"http://119.23.162.138/cloud/Employee/UnFreeze.do"
 #define SubmitePasswordURL  @"http://119.23.162.138/cloud/ResetPassword/submitePassword.do"
+#define SubmiteImage        @"http://119.23.162.138/cloud/Employee/UploadEmpImage.do"
+#define GetuserInfoURL      @"http://119.23.162.138/cloud/Employee/GetUserInfo.do"
+#define UpdataUserInfoURL   @"http://119.23.162.138/cloud/Employee/UpdateUserInfo.do"
+
 
 #define DBFILE_NAME @"contact.sqlite3"
 

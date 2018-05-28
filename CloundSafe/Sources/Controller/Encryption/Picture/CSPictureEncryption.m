@@ -271,13 +271,13 @@
     [datadict setObject:user_identity forKey:@"user_identify"];
     [datadict setObject:[keyPath lastPathComponent] forKey:@"file_id"];
     [datadict setObject:@"1" forKey:@"fp_num"];
-    
     //发送请求,上传key
 
     [mgr POST:url parameters:datadict constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         
         [formData appendPartWithFileData:[NSData dataWithContentsOfFile:keyPath] name:@"file" fileName:keyPath mimeType:@"file"];
-        
+        NSLog(@"keypath is %@",keyPath);
+        NSLog(@"formData is %@",formData);
     } success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
         if ([[responseObject valueForKey:@"status"]isEqualToString:@"Success"] &&

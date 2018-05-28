@@ -29,6 +29,7 @@
     }
     return self;
 }
+
 - (NSArray *)arrayOfValidEmailFromContact:(CSContact *)contact
 {
     NSMutableArray *arr = [[NSMutableArray alloc]init];

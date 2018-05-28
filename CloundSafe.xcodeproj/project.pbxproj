@@ -11,6 +11,10 @@
 		2705551C209DA5F800A069ED /* EmergencyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2705551B209DA5F800A069ED /* EmergencyViewController.m */; };
 		2726F4F920A03384001A2205 /* EnsureUnfreezeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2726F4F820A03384001A2205 /* EnsureUnfreezeViewController.m */; };
 		2726F4FC20A059EA001A2205 /* ModifyPasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2726F4FB20A059EA001A2205 /* ModifyPasswordViewController.m */; };
+		2739BF1220AEFE73005B251D /* PersonalTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2739BF1120AEFE73005B251D /* PersonalTableViewController.m */; };
+		2739BF1520B40629005B251D /* PersonalTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2739BF1420B40629005B251D /* PersonalTableViewCell.m */; };
+		2739BF1820B511CC005B251D /* ResetEmailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2739BF1720B511CC005B251D /* ResetEmailViewController.m */; };
+		27830CE420BAD9F800082A05 /* PersonalinfoTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 27830CE320BAD9F800082A05 /* PersonalinfoTableViewCell.m */; };
 		27C0BB43207C94DF00E39FD1 /* guideImage1.png in Resources */ = {isa = PBXBuildFile; fileRef = 27C0BB3F207C94DF00E39FD1 /* guideImage1.png */; };
 		27C0BB44207C94DF00E39FD1 /* guideImage2.png in Resources */ = {isa = PBXBuildFile; fileRef = 27C0BB40207C94DF00E39FD1 /* guideImage2.png */; };
 		27C0BB45207C94DF00E39FD1 /* guideImage4.png in Resources */ = {isa = PBXBuildFile; fileRef = 27C0BB41207C94DF00E39FD1 /* guideImage4.png */; };
@@ -279,6 +283,14 @@
 		2726F4F820A03384001A2205 /* EnsureUnfreezeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EnsureUnfreezeViewController.m; sourceTree = "<group>"; };
 		2726F4FA20A059EA001A2205 /* ModifyPasswordViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ModifyPasswordViewController.h; sourceTree = "<group>"; };
 		2726F4FB20A059EA001A2205 /* ModifyPasswordViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ModifyPasswordViewController.m; sourceTree = "<group>"; };
+		2739BF1020AEFE73005B251D /* PersonalTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PersonalTableViewController.h; sourceTree = "<group>"; };
+		2739BF1120AEFE73005B251D /* PersonalTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PersonalTableViewController.m; sourceTree = "<group>"; };
+		2739BF1320B40629005B251D /* PersonalTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PersonalTableViewCell.h; sourceTree = "<group>"; };
+		2739BF1420B40629005B251D /* PersonalTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PersonalTableViewCell.m; sourceTree = "<group>"; };
+		2739BF1620B511CC005B251D /* ResetEmailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ResetEmailViewController.h; sourceTree = "<group>"; };
+		2739BF1720B511CC005B251D /* ResetEmailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ResetEmailViewController.m; sourceTree = "<group>"; };
+		27830CE220BAD9F800082A05 /* PersonalinfoTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PersonalinfoTableViewCell.h; sourceTree = "<group>"; };
+		27830CE320BAD9F800082A05 /* PersonalinfoTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PersonalinfoTableViewCell.m; sourceTree = "<group>"; };
 		27C0BB3F207C94DF00E39FD1 /* guideImage1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guideImage1.png; sourceTree = "<group>"; };
 		27C0BB40207C94DF00E39FD1 /* guideImage2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guideImage2.png; sourceTree = "<group>"; };
 		27C0BB41207C94DF00E39FD1 /* guideImage4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guideImage4.png; sourceTree = "<group>"; };
@@ -732,6 +744,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2739BF0F20AEFDAA005B251D /* PersonalInfo */ = {
+			isa = PBXGroup;
+			children = (
+				2739BF1020AEFE73005B251D /* PersonalTableViewController.h */,
+				2739BF1120AEFE73005B251D /* PersonalTableViewController.m */,
+				2739BF1320B40629005B251D /* PersonalTableViewCell.h */,
+				2739BF1420B40629005B251D /* PersonalTableViewCell.m */,
+				2739BF1620B511CC005B251D /* ResetEmailViewController.h */,
+				2739BF1720B511CC005B251D /* ResetEmailViewController.m */,
+				27830CE220BAD9F800082A05 /* PersonalinfoTableViewCell.h */,
+				27830CE320BAD9F800082A05 /* PersonalinfoTableViewCell.m */,
+			);
+			path = PersonalInfo;
+			sourceTree = "<group>";
+		};
 		784385461F2ECC5000C77942 /* Gesture */ = {
 			isa = PBXGroup;
 			children = (
@@ -1322,6 +1349,7 @@
 		E780493B1D3DFA9B000C90E5 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				2739BF0F20AEFDAA005B251D /* PersonalInfo */,
 				C482C6C01F8E0A0200CA57B9 /* DHGuidePageHUD */,
 				784385461F2ECC5000C77942 /* Gesture */,
 				E78049401D3DFA9B000C90E5 /* Decryption */,
@@ -1727,6 +1755,7 @@
 			files = (
 				95E1F1DE1D1ED139008C12B7 /* MASConstraint.m in Sources */,
 				E7CFA3881D48AF4600C6DB62 /* MWZoomingScrollView.m in Sources */,
+				27830CE420BAD9F800082A05 /* PersonalinfoTableViewCell.m in Sources */,
 				95E1F1E11D1ED139008C12B7 /* MASViewAttribute.m in Sources */,
 				E75763C41D6C1D4000A2FA8F /* CSHomeTabBarController.m in Sources */,
 				E7CFA3851D48AF4600C6DB62 /* MWPhotoBrowser.m in Sources */,
@@ -1750,6 +1779,7 @@
 				E78799ED1DADEE750070F88C /* ContactBL.m in Sources */,
 				95E1F2001D1ED1A3008C12B7 /* ResetPasswordViewController.m in Sources */,
 				95A1B2A11D29621D004AFF48 /* TZPhotoPreviewController.m in Sources */,
+				2739BF1220AEFE73005B251D /* PersonalTableViewController.m in Sources */,
 				95E1F1EE1D1ED139008C12B7 /* MJRefreshAutoNormalFooter.m in Sources */,
 				E71900001DA9E6B200411E87 /* CSContactInoContorller.m in Sources */,
 				95E1F1F41D1ED139008C12B7 /* MJRefreshNormalHeader.m in Sources */,
@@ -1771,6 +1801,7 @@
 				E77F59251DA88A35002C4B55 /* CSPhoneBookController.m in Sources */,
 				95E1F20E1D1EDD95008C12B7 /* UINavigationBar+Awesome.m in Sources */,
 				E77F58951D98E29D002C4B55 /* UIButton+WebCache.m in Sources */,
+				2739BF1820B511CC005B251D /* ResetEmailViewController.m in Sources */,
 				E748334A1D8F834000BD0A9A /* CSImportPictureController.m in Sources */,
 				78130B671F29EAAB00CE7EC3 /* CSEncryptionVedioViewController.m in Sources */,
 				95E1F1E51D1ED139008C12B7 /* View+MASAdditions.m in Sources */,
@@ -1839,6 +1870,7 @@
 				2726F4FC20A059EA001A2205 /* ModifyPasswordViewController.m in Sources */,
 				C482C6D31F8E591C00CA57B9 /* DHGifImageOperation.m in Sources */,
 				E7CFA3971D499CCB00C6DB62 /* LICENSE.md in Sources */,
+				2739BF1520B40629005B251D /* PersonalTableViewCell.m in Sources */,
 				78130B641F29EA7C00CE7EC3 /* CSEncryptionImageViewController.m in Sources */,
 				E72A55EF1D76F6F9001C1DD3 /* CSShareContentController.m in Sources */,
 				E73A5C251DD8689700B42350 /* OffLinePhoneBookController.m in Sources */,

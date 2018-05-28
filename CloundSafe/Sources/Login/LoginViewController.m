@@ -548,7 +548,11 @@ static CGFloat const kContainViewYNormal = 70.0;
                             }
                             
                             NSLog(@"登录成功，identity = %@",content);
-                            //保存用户名和密码
+                            NSRange range = [content rangeOfString:@"_"];
+                            NSString *subStr = [content substringFromIndex:range.location+1];
+                            NSLog(@"%@",subStr);
+                            //保存用户名和密码和用户标识
+                            [userDefaults setObject:subStr forKey:@"userIdentify"];
                             [userDefaults setObject:self.usernameField.text forKey:@"userName"];
                             [userDefaults setObject:self.passwordField.text forKey:@"userPassword"];
                             [userDefaults setObject:@(YES) forKey:ISLOGIN];
